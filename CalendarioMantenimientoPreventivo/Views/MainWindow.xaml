@@ -1,0 +1,290 @@
+﻿<Window x:Class="CalendarioMantenimientoPreventivo.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Calendario de Mantenimiento Preventivo" 
+        Height="750" 
+        Width="1100"
+        MinHeight="600"
+        MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="#FAFAFA">
+
+    <Window.Resources>
+        <!-- Estilo base para tarjetas de mes -->
+        <Style x:Key="MonthCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#D0D0D0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Margin" Value="12"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="MinHeight" Value="120"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" 
+                                    Opacity="0.06" 
+                                    BlurRadius="8" 
+                                    ShadowDepth="2"
+                                    Direction="270"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Estilo para tarjetas con mantenimiento programado -->
+        <Style x:Key="MonthCardWithMaintenanceStyle" 
+               TargetType="Border" 
+               BasedOn="{StaticResource MonthCardStyle}">
+            <Setter Property="Background" Value="#F5F8FA"/>
+            <Setter Property="BorderBrush" Value="#607D8B"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+        </Style>
+
+        <!-- Estilo para nombre del mes -->
+        <Style x:Key="MonthTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="#2C3E50"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <!-- Estilo para texto informativo -->
+        <Style x:Key="InfoTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="#95A5A6"/>
+        </Style>
+
+        <!-- Estilo para texto de mantenimientos -->
+        <Style x:Key="MaintenanceTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="#546E7A"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header: Selector de año -->
+        <Border Grid.Row="0" 
+                Background="White" 
+                BorderBrush="#E0E0E0"
+                BorderThickness="0,0,0,1"
+                Padding="24">
+            <StackPanel>
+                <TextBlock Text="Calendario Anual" 
+                          FontSize="22" 
+                          FontWeight="SemiBold" 
+                          Foreground="#2C3E50"
+                          HorizontalAlignment="Center"
+                          Margin="0,0,0,16"/>
+
+                <StackPanel Orientation="Horizontal" 
+                           HorizontalAlignment="Center">
+                    <TextBlock Text="Año:" 
+                              FontSize="14" 
+                              FontWeight="Medium" 
+                              Foreground="#546E7A" 
+                              VerticalAlignment="Center" 
+                              Margin="0,0,12,0"/>
+
+                    <Button Content="◀" 
+                           Width="36" 
+                           Height="36" 
+                           FontSize="12"
+                           Background="White" 
+                           Foreground="#546E7A"
+                           BorderBrush="#D0D0D0" 
+                           BorderThickness="1"
+                           Cursor="Hand"
+                           Margin="0,0,8,0"/>
+
+                    <TextBox Text="2025" 
+                            Width="90" 
+                            Height="36" 
+                            FontSize="16" 
+                            FontWeight="Medium" 
+                            TextAlignment="Center" 
+                            VerticalContentAlignment="Center"
+                            Foreground="#2C3E50"
+                            BorderBrush="#D0D0D0"
+                            BorderThickness="1"
+                            Margin="0,0,8,0"/>
+
+                    <Button Content="▶" 
+                           Width="36" 
+                           Height="36" 
+                           FontSize="12"
+                           Background="White" 
+                           Foreground="#546E7A"
+                           BorderBrush="#D0D0D0" 
+                           BorderThickness="1"
+                           Cursor="Hand"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Área principal: Calendario con tarjetas de meses -->
+        <ScrollViewer Grid.Row="1" 
+                     VerticalScrollBarVisibility="Auto"
+                     HorizontalScrollBarVisibility="Disabled"
+                     Padding="16,24,16,24">
+            <UniformGrid Columns="4" 
+                        Rows="3">
+
+                <!-- Enero -->
+                <Border Style="{StaticResource MonthCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Enero" Style="{StaticResource MonthTextStyle}"/>
+                        <TextBlock Text="—" Style="{StaticResource InfoTextStyle}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Febrero -->
+                <Border Style="{StaticResource MonthCardWithMaintenanceStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Febrero" Style="{StaticResource MonthTextStyle}"/>
+                        <TextBlock Text="3 mantenimientos" Style="{StaticResource MaintenanceTextStyle}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Marzo -->
+                <Border Style="{StaticResource MonthCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Marzo" Style="{StaticResource MonthTextStyle}"/>
+                        <TextBlock Text="—" Style="{StaticResource InfoTextStyle}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Abril -->
+                <Border Style="{StaticResource MonthCardWithMaintenanceStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Abril" Style="{StaticResource MonthTextStyle}"/>
+                        <TextBlock Text="5 mantenimientos" Style="{StaticResource MaintenanceTextStyle}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Mayo -->
+                <Border Style="{StaticResource MonthCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Mayo" Style="{StaticResource MonthTextStyle}"/>
+                        <TextBlock Text="—" Style="{StaticResource InfoTextStyle}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Junio -->
+                <Border Style="{StaticResource MonthCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Junio" Style="{StaticResource MonthTextStyle}"/>
+                        <TextBlock Text="—" Style="{StaticResource InfoTextStyle}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Julio -->
+                <Border Style="{StaticResource MonthCardWithMaintenanceStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Julio" Style="{StaticResource MonthTextStyle}"/>
+                        <TextBlock Text="2 mantenimientos" Style="{StaticResource MaintenanceTextStyle}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Agosto -->
+                <Border Style="{StaticResource MonthCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Agosto" Style="{StaticResource MonthTextStyle}"/>
+                        <TextBlock Text="—" Style="{StaticResource InfoTextStyle}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Septiembre -->
+                <Border Style="{StaticResource MonthCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Septiembre" Style="{StaticResource MonthTextStyle}"/>
+                        <TextBlock Text="—" Style="{StaticResource InfoTextStyle}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Octubre -->
+                <Border Style="{StaticResource MonthCardWithMaintenanceStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Octubre" Style="{StaticResource MonthTextStyle}"/>
+                        <TextBlock Text="4 mantenimientos" Style="{StaticResource MaintenanceTextStyle}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Noviembre -->
+                <Border Style="{StaticResource MonthCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Noviembre" Style="{StaticResource MonthTextStyle}"/>
+                        <TextBlock Text="—" Style="{StaticResource InfoTextStyle}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Diciembre -->
+                <Border Style="{StaticResource MonthCardWithMaintenanceStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Diciembre" Style="{StaticResource MonthTextStyle}"/>
+                        <TextBlock Text="1 mantenimiento" Style="{StaticResource MaintenanceTextStyle}"/>
+                    </StackPanel>
+                </Border>
+
+            </UniformGrid>
+        </ScrollViewer>
+
+        <!-- Footer: Botón de gestión -->
+        <Border Grid.Row="2" 
+                Background="White" 
+                BorderBrush="#E0E0E0"
+                BorderThickness="0,1,0,0"
+                Padding="24">
+            <Button x:Name="AbrirLocalesWindow" Content="Gestionar Locales y Mantenimientos" 
+                   Height="44" 
+                   MinWidth="280"
+                   FontSize="14" 
+                   FontWeight="Medium" 
+                   Background="#546E7A" 
+                   Foreground="White" 
+                   BorderBrush="#455A64" 
+                   BorderThickness="1"
+                   Cursor="Hand"
+                   HorizontalAlignment="Center"
+                   Padding="24,0" Click="AbrirLocalesWindow_Click_1">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" 
+                                           BorderBrush="{TemplateBinding BorderBrush}" 
+                                           BorderThickness="{TemplateBinding BorderThickness}" 
+                                           CornerRadius="4">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                        VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#607D8B"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#455A64"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Border>
+
+    </Grid>
+</Window>

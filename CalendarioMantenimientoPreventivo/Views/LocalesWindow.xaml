@@ -1,0 +1,319 @@
+﻿<Window x:Class="CalendarioMantenimientoPreventivo.Views.LocalesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Gestión de Locales" 
+        Height="571" 
+        Width="756"
+        MinHeight="450"
+        MinWidth="650"
+        WindowStartupLocation="CenterScreen"
+        Background="#FAFAFA">
+
+    <Window.Resources>
+        <!-- Estilo para botón Agregar -->
+        <Style x:Key="AgregarButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                               CornerRadius="4"
+                               Padding="16,0">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#66BB6A"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#43A047"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Estilo para botón Editar -->
+        <Style x:Key="EditarButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+            <Setter Property="Background" Value="#3339ff"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                               CornerRadius="4"
+                               Padding="16,0">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#607D8B"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#455A64"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Estilo para botón Eliminar -->
+        <Style x:Key="EliminarButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+            <Setter Property="Background" Value="#E53935"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                               CornerRadius="4"
+                               Padding="16,0">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#EF5350"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#C62828"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Estilo para botón Volver -->
+        <Style x:Key="VolverButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="#546E7A"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#D0D0D0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                               BorderBrush="{TemplateBinding BorderBrush}"
+                               BorderThickness="{TemplateBinding BorderThickness}"
+                               CornerRadius="4"
+                               Padding="16,0">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F5F5F5"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#E0E0E0"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Estilo para los elementos de la lista -->
+        <Style x:Key="ListBoxItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Padding" Value="16,12"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border Background="{TemplateBinding Background}"
+                               BorderBrush="{TemplateBinding BorderBrush}"
+                               BorderThickness="{TemplateBinding BorderThickness}"
+                               Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#F5F8FA"/>
+                    <Setter Property="Foreground" Value="#2C3E50"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FAFBFC"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" 
+                Background="White" 
+                BorderBrush="#E0E0E0"
+                BorderThickness="0,0,0,1"
+                Padding="24">
+            <StackPanel>
+                <TextBlock Text="Gestión de Locales" 
+                          FontSize="22" 
+                          FontWeight="SemiBold" 
+                          Foreground="#2C3E50"
+                          HorizontalAlignment="Center"
+                          Margin="0,0,0,8"/>
+                <TextBlock Text="Administre los locales de su empresa" 
+                          FontSize="12" 
+                          Foreground="#95A5A6"
+                          HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Contenido principal -->
+        <Grid Grid.Row="1" Margin="24">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Panel izquierdo: Lista de Locales -->
+            <Border Grid.Column="0" 
+                    Background="White" 
+                    BorderBrush="#D0D0D0"
+                    BorderThickness="1"
+                    CornerRadius="4">
+                <Border.Effect>
+                    <DropShadowEffect Color="Black" 
+                                    Opacity="0.06" 
+                                    BlurRadius="8" 
+                                    ShadowDepth="2"
+                                    Direction="270"/>
+                </Border.Effect>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Título de la lista -->
+                    <Border Grid.Row="0" 
+                            Background="#F8F9FA"
+                            BorderBrush="#E0E0E0"
+                            BorderThickness="0,0,0,1"
+                            Padding="16,12">
+                        <TextBlock Text="Listado de Locales" 
+                                  FontSize="15" 
+                                  FontWeight="SemiBold" 
+                                  Foreground="#2C3E50"/>
+                    </Border>
+
+                    <!-- Lista de locales -->
+                    <ListBox Grid.Row="1" 
+        x:Name="LocalesListBox"
+        BorderThickness="0"
+        Background="White"
+        ItemContainerStyle="{StaticResource ListBoxItemStyle}"
+        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+        ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Nombre}" 
+                          FontSize="14" 
+                          FontWeight="Medium"
+                          Foreground="#2C3E50"
+                          Margin="0,0,0,2"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+
+                    </ListBox>
+
+                    <!-- Contador de locales -->
+                    <Border Grid.Row="2" 
+                            Background="#F8F9FA"
+                            BorderBrush="#E0E0E0"
+                            BorderThickness="0,1,0,0"
+                            Padding="16,10">
+                        <TextBlock Text="Total: 4 locales registrados" 
+                                  FontSize="11" 
+                                  Foreground="#546E7A"
+                                  FontStyle="Italic"/>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Panel derecho: Botones de acción -->
+            <StackPanel Grid.Column="2" 
+                       VerticalAlignment="Top">
+
+                <TextBlock Text="Acciones" 
+                          FontSize="13" 
+                          FontWeight="SemiBold" 
+                          Foreground="#546E7A"
+                          Margin="0,0,0,16"/>
+
+                <!-- Botón Agregar -->
+                <Button x:Name="AgregarButton"
+                       Content="➕ Agregar Local"
+                       Style="{StaticResource AgregarButtonStyle}" Click="AgregarButton_Click"/>
+
+                <!-- Botón Editar -->
+                <Button x:Name="EditarButton"
+                       Content="✏️ Editar Local"
+                       Style="{StaticResource EditarButtonStyle}" Click="EditarButton_Click"/>
+
+                <!-- Botón Eliminar -->
+                <Button x:Name="EliminarButton"
+                       Content="🗑️ Eliminar Local"
+                       Style="{StaticResource EliminarButtonStyle}" Click="EliminarButton_Click"/>
+
+                <!-- Separador -->
+                <Border Height="1" 
+                       Background="#E0E0E0" 
+                       Margin="0,12,0,24"/>
+
+                <!-- Botón Volver -->
+                <Button x:Name="CerrarButton"
+                       Content="← Volver"
+                       Style="{StaticResource VolverButtonStyle}" Click="CerrarButton_Click"/>
+
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+</Window>
