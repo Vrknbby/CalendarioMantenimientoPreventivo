@@ -98,6 +98,9 @@ namespace CalendarioMantenimientoPreventivo.Models
             }
         }
 
+        public ICollection<MantenimientoNotificacion> Notificaciones { get; set; }
+        = new List<MantenimientoNotificacion>();
+
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string propertyName)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

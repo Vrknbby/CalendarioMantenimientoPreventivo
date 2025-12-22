@@ -15,18 +15,40 @@ namespace CalendarioMantenimientoPreventivo
     {
         public AppDbContext DbContext { get; private set; } = null!;
         public LocalService LocalService { get; private set; } = null!;
-        public MantenimientoService mantenimientoService { get; private set; } = null!;
+        public ParametroSistemaService ParametroSistemaService { get; private set; } = null!;
 
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            bool inicioConWindows = e.Args.Contains("--startup");
+
             DbContext = new AppDbContext();
             DbContext.Database.Migrate();
 
             LocalService = new LocalService(DbContext);
+            ParametroSistemaService = new ParametroSistemaService(DbContext);
 
-            var mainWindow = new MainWindow(LocalService, DbContext);
+            var notificacionService = new NotificacionService(DbContext);
+            var mensajes = notificacionService.ObtenerNotificacionesDelDia();
+
+            foreach (var mensaje in mensajes)
+            {
+                MessageBox.Show(
+                    mensaje,
+                    "Recordatorio de Mantenimiento",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+
+            if (inicioConWindows)
+            {
+                Shutdown();
+                return;
+            }
+
+            var mainWindow = new MainWindow(LocalService, DbContext, ParametroSistemaService);
             mainWindow.Show();
         }
 

@@ -3,6 +3,7 @@ using System;
 using CalendarioMantenimientoPreventivo.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CalendarioMantenimientoPreventivo.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251222161704_AddNotificaciones")]
+    partial class AddNotificaciones
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.11");
@@ -107,13 +110,6 @@ namespace CalendarioMantenimientoPreventivo.Migrations
                     b.HasKey("Clave");
 
                     b.ToTable("ParametrosSistema");
-
-                    b.HasData(
-                        new
-                        {
-                            Clave = "NotificacionesActivas",
-                            Valor = "true"
-                        });
                 });
 
             modelBuilder.Entity("CalendarioMantenimientoPreventivo.Models.Mantenimiento", b =>

@@ -27,6 +27,8 @@ namespace CalendarioMantenimientoPreventivo.Views
         private readonly LocalService _localService;
         private readonly AppDbContext _context;
         private readonly MantenimientoService _mantenimientoService;
+        private readonly ParametroSistemaService _parametroService;
+        private readonly StartupWindowsService _startupService;
 
         private int _anioSeleccionado;
         public int AnioSeleccionado
@@ -53,6 +55,13 @@ namespace CalendarioMantenimientoPreventivo.Views
                 {
                     _iniciarConWindows = value;
                     NotifyPropertyChanged(nameof(IniciarConWindows));
+
+                    _parametroService.CambiarNotificaciones(value);
+
+                    if (value)
+                        _startupService.Activar();
+                    else
+                        _startupService.Desactivar();
                 }
             }
         }
@@ -66,17 +75,26 @@ namespace CalendarioMantenimientoPreventivo.Views
 
         public ObservableCollection<MesInfo> Meses { get; set; }
 
-        public MainWindow(LocalService localService, AppDbContext context)
+        public MainWindow(LocalService localService, AppDbContext context, ParametroSistemaService parametroService)
         {
             InitializeComponent();
             _localService = localService;
             _context = context;
             _mantenimientoService = new MantenimientoService(_context, 0);
+            _startupService = new StartupWindowsService();
+            _parametroService = parametroService;
 
             Meses = new ObservableCollection<MesInfo>();
             AnioSeleccionado = DateTime.Now.Year;
 
             DataContext = this;
+            CargarParametros();
+
+        }
+
+        private void CargarParametros()
+        {
+            IniciarConWindows = _parametroService.NotificacionesActivas();
         }
 
         private void CargarCalendario()
