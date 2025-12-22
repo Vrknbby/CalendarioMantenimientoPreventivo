@@ -23,8 +23,6 @@ namespace CalendarioMantenimientoPreventivo.Views
         public string NombreLocal { get; private set; }
         public bool FueGuardado { get; private set; }
         private readonly bool _esEdicion;
-
-        private readonly LocalService _localService;
         public LocalDialog() : this(null)
         {
         }

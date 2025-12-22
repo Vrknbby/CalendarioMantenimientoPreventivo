@@ -5,16 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Detalle del Mes" 
-        Height="678" 
-        Width="831"
+        Height="858" 
+        Width="972"
         MinHeight="600"
         MinWidth="750"
         WindowStartupLocation="CenterScreen"
         Background="#FAFAFA">
 
     <Window.Resources>
-        <!-- Estilo para días normales del calendario -->
-        <Style x:Key="DiaNormalStyle" TargetType="Border">
+        <!-- Convertidor Boolean to Visibility -->
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+        <!-- Estilo base para días -->
+        <Style x:Key="DiaBaseStyle" TargetType="Border">
             <Setter Property="Background" Value="White"/>
             <Setter Property="BorderBrush" Value="#E0E0E0"/>
             <Setter Property="BorderThickness" Value="1"/>
@@ -23,32 +26,95 @@
             <Setter Property="Cursor" Value="Hand"/>
         </Style>
 
-        <!-- Estilo para días con mantenimiento -->
-        <Style x:Key="DiaConMantenimientoStyle" TargetType="Border">
-            <Setter Property="Background" Value="#E3F2FD"/>
-            <Setter Property="BorderBrush" Value="#2196F3"/>
-            <Setter Property="BorderThickness" Value="2"/>
-            <Setter Property="Margin" Value="2"/>
-            <Setter Property="MinHeight" Value="70"/>
-            <Setter Property="Cursor" Value="Hand"/>
-        </Style>
+        <!-- Estilo dinámico para días del calendario -->
+        <Style x:Key="DiaCalendarioStyle"
+       TargetType="Border"
+       BasedOn="{StaticResource DiaBaseStyle}">
 
-        <!-- Estilo para días de otro mes -->
-        <Style x:Key="DiaOtroMesStyle" TargetType="Border">
-            <Setter Property="Background" Value="#F5F5F5"/>
-            <Setter Property="BorderBrush" Value="#E0E0E0"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Margin" Value="2"/>
-            <Setter Property="MinHeight" Value="70"/>
-            <Setter Property="Opacity" Value="0.5"/>
-        </Style>
+            <Style.Triggers>
 
+                <!-- Días de otro mes -->
+                <DataTrigger Binding="{Binding EsDelMesActual}" Value="False">
+                    <Setter Property="Background" Value="#F5F5F5"/>
+                    <Setter Property="Opacity" Value="0.5"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding EsDestinoDrop}" Value="True">
+                    <Setter Property="Background" Value="#E1F5FE"/>
+                    <Setter Property="BorderBrush" Value="#0288D1"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </DataTrigger>
+
+                <!-- Días con mantenimiento -->
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding EsDelMesActual}" Value="True"/>
+                        <Condition Binding="{Binding TieneMantenimientos}" Value="True"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Background" Value="#E3F2FD"/>
+                    <Setter Property="BorderBrush" Value="#2196F3"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </MultiDataTrigger>
+
+                <!-- 🔥 OPACAR cuando hay drag activo -->
+                <DataTrigger Binding="{Binding DataContext.HayDragActivo,
+                     RelativeSource={RelativeSource AncestorType=Window}}"
+                     Value="True">
+                    <Setter Property="Opacity" Value="0.4"/>
+                </DataTrigger>
+
+                <!-- ⭐ RESALTAR el día que se arrastra -->
+                <DataTrigger Binding="{Binding EsArrastrado}" Value="True">
+                    <Setter Property="Opacity" Value="1"/>
+                    <Setter Property="Background" Value="#FFFDE7"/>
+                    <Setter Property="BorderBrush" Value="#FBC02D"/>
+                    <Setter Property="BorderThickness" Value="3"/>
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect
+                        Color="Black"
+                        BlurRadius="15"
+                        ShadowDepth="4"
+                        Opacity="0.25"/>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+
+                <!-- Hover (solo si no está siendo arrastrado) -->
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding RelativeSource={RelativeSource Self},
+                                     Path=IsMouseOver}"
+                   Value="True"/>
+                        <Condition Binding="{Binding EsArrastrado}"
+                   Value="False"/>
+                    </MultiDataTrigger.Conditions>
+
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect
+                Color="Black"
+                Opacity="0.15"
+                BlurRadius="8"
+                ShadowDepth="2"/>
+                        </Setter.Value>
+                    </Setter>
+                </MultiDataTrigger>
+
+            </Style.Triggers>
+        </Style>
+        
         <!-- Estilo para el número del día -->
         <Style x:Key="NumeroDiaStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="16"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Foreground" Value="#2C3E50"/>
             <Setter Property="Margin" Value="8,6,8,4"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding EsDelMesActual}" Value="False">
+                    <Setter Property="Foreground" Value="#95A5A6"/>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
 
         <!-- Estilo para indicador de mantenimientos -->
@@ -127,8 +193,7 @@
                 <StackPanel Grid.Column="0" 
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center">
-                    <TextBlock x:Name="MesAñoTextBlock"
-                              Text="Marzo 2026" 
+                    <TextBlock Text="{Binding MesAnioTexto}"
                               FontSize="24" 
                               FontWeight="SemiBold" 
                               Foreground="#2C3E50"
@@ -144,7 +209,8 @@
                        x:Name="CerrarButton"
                        Content="← Cerrar"
                        Style="{StaticResource CerrarButtonStyle}"
-                       VerticalAlignment="Center"/>
+                       VerticalAlignment="Center"
+                       Click="CerrarButton_Click"/>
             </Grid>
         </Border>
 
@@ -216,276 +282,36 @@
                     </Grid>
 
                     <!-- Calendario de días (6 semanas x 7 días) -->
-                    <UniformGrid Grid.Row="2" 
-                                Rows="6" 
-                                Columns="7"
-                                x:Name="CalendarioGrid">
+                    <ItemsControl Grid.Row="2" 
+                                 ItemsSource="{Binding Dias}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="6" Columns="7"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource DiaCalendarioStyle}"
+                                    AllowDrop="True"
+                                    PreviewMouseLeftButtonDown="Dia_PreviewMouseLeftButtonDown"
+                                    MouseMove="Dia_MouseMove"
+                                    DragEnter="Dia_DragEnter"
+                                    DragLeave="Dia_DragLeave"
+                                    Drop="Dia_Drop"
+                                    MouseLeftButtonUp="Dia_Click">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Dia}" 
+                                           Style="{StaticResource NumeroDiaStyle}"/>
 
-                        <!-- Semana 1 -->
-                        <!-- Días del mes anterior (ejemplo) -->
-                        <Border Style="{StaticResource DiaOtroMesStyle}">
-                            <StackPanel>
-                                <TextBlock Text="28" Style="{StaticResource NumeroDiaStyle}" Foreground="#95A5A6"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaOtroMesStyle}">
-                            <StackPanel>
-                                <TextBlock Text="29" Style="{StaticResource NumeroDiaStyle}" Foreground="#95A5A6"/>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Días del mes actual -->
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="1" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="2" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaConMantenimientoStyle}">
-                            <StackPanel>
-                                <TextBlock Text="3" Style="{StaticResource NumeroDiaStyle}"/>
-                                <TextBlock Text="🔧 2 mant." Style="{StaticResource IndicadorMantenimientoStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="4" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="5" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Semana 2 -->
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="6" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="7" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="8" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="9" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="10" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="11" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="12" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Semana 3 -->
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="13" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="14" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaConMantenimientoStyle}">
-                            <StackPanel>
-                                <TextBlock Text="15" Style="{StaticResource NumeroDiaStyle}"/>
-                                <TextBlock Text="🔧 1 mant." Style="{StaticResource IndicadorMantenimientoStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="16" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="17" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="18" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="19" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Semana 4 -->
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="20" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="21" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaConMantenimientoStyle}">
-                            <StackPanel>
-                                <TextBlock Text="22" Style="{StaticResource NumeroDiaStyle}"/>
-                                <TextBlock Text="🔧 3 mant." Style="{StaticResource IndicadorMantenimientoStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="23" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="24" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="25" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="26" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Semana 5 -->
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="27" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="28" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="29" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="30" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaNormalStyle}">
-                            <StackPanel>
-                                <TextBlock Text="31" Style="{StaticResource NumeroDiaStyle}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Días del mes siguiente -->
-                        <Border Style="{StaticResource DiaOtroMesStyle}">
-                            <StackPanel>
-                                <TextBlock Text="1" Style="{StaticResource NumeroDiaStyle}" Foreground="#95A5A6"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaOtroMesStyle}">
-                            <StackPanel>
-                                <TextBlock Text="2" Style="{StaticResource NumeroDiaStyle}" Foreground="#95A5A6"/>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Semana 6 (si es necesaria) -->
-                        <Border Style="{StaticResource DiaOtroMesStyle}">
-                            <StackPanel>
-                                <TextBlock Text="3" Style="{StaticResource NumeroDiaStyle}" Foreground="#95A5A6"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaOtroMesStyle}">
-                            <StackPanel>
-                                <TextBlock Text="4" Style="{StaticResource NumeroDiaStyle}" Foreground="#95A5A6"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaOtroMesStyle}">
-                            <StackPanel>
-                                <TextBlock Text="5" Style="{StaticResource NumeroDiaStyle}" Foreground="#95A5A6"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaOtroMesStyle}">
-                            <StackPanel>
-                                <TextBlock Text="6" Style="{StaticResource NumeroDiaStyle}" Foreground="#95A5A6"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaOtroMesStyle}">
-                            <StackPanel>
-                                <TextBlock Text="7" Style="{StaticResource NumeroDiaStyle}" Foreground="#95A5A6"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaOtroMesStyle}">
-                            <StackPanel>
-                                <TextBlock Text="8" Style="{StaticResource NumeroDiaStyle}" Foreground="#95A5A6"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource DiaOtroMesStyle}">
-                            <StackPanel>
-                                <TextBlock Text="9" Style="{StaticResource NumeroDiaStyle}" Foreground="#95A5A6"/>
-                            </StackPanel>
-                        </Border>
-
-                    </UniformGrid>
+                                                                <TextBlock Text="{Binding TextoMantenimientos}" 
+                                           Style="{StaticResource IndicadorMantenimientoStyle}"
+                                           Visibility="{Binding TieneMantenimientos,
+                                           Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </Grid>
             </Border>
         </ScrollViewer>

@@ -1,4 +1,5 @@
-﻿using CalendarioMantenimientoPreventivo.Models;
+﻿using CalendarioMantenimientoPreventivo.Data;
+using CalendarioMantenimientoPreventivo.Models;
 using CalendarioMantenimientoPreventivo.Service;
 using System;
 using System.Collections.Generic;
@@ -22,18 +23,15 @@ namespace CalendarioMantenimientoPreventivo.Views
     public partial class LocalesWindow : Window
     {
         private readonly LocalService _localService;
-        public LocalesWindow(LocalService localService)
+        private readonly AppDbContext _context;
+        public LocalesWindow(LocalService localService, AppDbContext context)
         {
             InitializeComponent();
             _localService = localService;
-            cargarLocales();
+            LocalesListBox.ItemsSource = _localService.Locales;
+            _context = context;
         }
 
-        private void cargarLocales()
-        {
-            LocalesListBox.ItemsSource = null;
-            LocalesListBox.ItemsSource = _localService.Locales;
-        }
         private void AgregarButton_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new LocalDialog();
@@ -41,7 +39,6 @@ namespace CalendarioMantenimientoPreventivo.Views
             if (dialog.ShowDialog() == true && dialog.FueGuardado)
             {
                 _localService.AgregarLocal(dialog.NombreLocal);
-                cargarLocales();
             }
         }
 
@@ -63,13 +60,12 @@ namespace CalendarioMantenimientoPreventivo.Views
             if (dialog.ShowDialog() == true && dialog.FueGuardado)
             {
                 _localService.ActualizarLocal(localSeleccionado, dialog.NombreLocal);
-                cargarLocales();
             }
         }
 
         private void EliminarButton_Click(object sender, RoutedEventArgs e)
         {
-            Local localSeleccionado = LocalesListBox.SelectedItem as Local;
+            Local? localSeleccionado = LocalesListBox.SelectedItem as Local;
             if (localSeleccionado == null)
             {
                 MessageBox.Show(
@@ -89,8 +85,17 @@ namespace CalendarioMantenimientoPreventivo.Views
             if (result == MessageBoxResult.Yes)
             {
                 _localService.EliminarLocal(localSeleccionado);
-                cargarLocales();
             }
+        }
+
+        private void LocalesListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (LocalesListBox.SelectedItem is not Local localSeleccionado)
+                return;
+
+            var mantenimientosWindow = new MantenimientosWindow(localSeleccionado, _context);
+            mantenimientosWindow.Owner = this;
+            mantenimientosWindow.ShowDialog();
         }
 
         private void CerrarButton_Click(object sender, RoutedEventArgs e)

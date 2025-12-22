@@ -1,4 +1,5 @@
-﻿using CalendarioMantenimientoPreventivo.Models;
+﻿using CalendarioMantenimientoPreventivo.Data;
+using CalendarioMantenimientoPreventivo.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,27 +11,51 @@ namespace CalendarioMantenimientoPreventivo.Service
 {
     public class LocalService
     {
+        private readonly AppDbContext _context;
         public ObservableCollection<Local> Locales { get; } = new();
+
+        public LocalService(AppDbContext context)
+        {
+            _context = context;
+            CargarLocales();
+        }
+
+        public void CargarLocales()
+        {
+            Locales.Clear();
+            foreach (var local in _context.Locales)
+                Locales.Add(local);
+        }
 
         public void AgregarLocal(string nombre)
         {
-            Locales.Add(new Local
+            var local = new Local
             {
-                Id = Locales.Count + 1,
                 Nombre = nombre
-            });
+            };
+
+            _context.Locales.Add(local);
+            _context.SaveChanges();
+
+            Locales.Add(local);
         }
 
         public void EliminarLocal(Local local)
         {
-            if (local != null)
-                Locales.Remove(local);
+            if (local == null) return;
+
+            _context.Locales.Remove(local);
+            _context.SaveChanges();
+
+            Locales.Remove(local);
         }
 
         public void ActualizarLocal(Local local, string nuevoNombre)
         {
-            if (local != null)
-                local.Nombre = nuevoNombre;
+            if (local == null) return;
+
+            local.Nombre = nuevoNombre;
+            _context.SaveChanges();
         }
     }
 }

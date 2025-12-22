@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Gestión de Mantenimientos" 
-        Height="700" 
-        Width="850"
+        Height="936" 
+        Width="856"
         MinHeight="650"
         MinWidth="750"
         WindowStartupLocation="CenterScreen"
@@ -64,6 +64,11 @@
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#B0BEC5"/>
+                    <Setter Property="Cursor" Value="No"/>
+                    <Setter Property="Opacity" Value="0.6"/>
+                </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="#66BB6A"/>
                 </Trigger>
@@ -96,11 +101,16 @@
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#B0BEC5"/>
+                    <Setter Property="Cursor" Value="No"/>
+                    <Setter Property="Opacity" Value="0.6"/>
+                </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#607D8B"/>
+                    <Setter Property="Background" Value="#5252ff"/>
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="Background" Value="#455A64"/>
+                    <Setter Property="Background" Value="#2020dd"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -114,6 +124,44 @@
             <Setter Property="Background" Value="#E53935"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                               CornerRadius="4"
+                               Padding="20,0">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#B0BEC5"/>
+                    <Setter Property="Cursor" Value="No"/>
+                    <Setter Property="Opacity" Value="0.6"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#EF5350"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#C62828"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="CancelarButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="MinWidth" Value="120"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#FF9800"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -128,10 +176,10 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#EF5350"/>
+                    <Setter Property="Background" Value="#FFB74D"/>
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="Background" Value="#C62828"/>
+                    <Setter Property="Background" Value="#F57C00"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -170,7 +218,7 @@
             </Style.Triggers>
         </Style>
 
-        <!-- Estilo para items de la lista -->
+        <!-- Estilo mejorado para items de la lista con selección más visible -->
         <Style x:Key="MantenimientoItemStyle" TargetType="ListBoxItem">
             <Setter Property="Padding" Value="16,12"/>
             <Setter Property="BorderThickness" Value="0,0,0,1"/>
@@ -190,12 +238,29 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#F5F8FA"/>
+                    <Setter Property="Background" Value="#E3F2FD"/>
+                    <Setter Property="BorderBrush" Value="#2196F3"/>
+                    <Setter Property="BorderThickness" Value="2,0,2,1"/>
                 </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FAFBFC"/>
+                    <Setter Property="Background" Value="#F5F5F5"/>
                 </Trigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsSelected" Value="True"/>
+                        <Condition Property="IsMouseOver" Value="True"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="Background" Value="#BBDEFB"/>
+                </MultiTrigger>
             </Style.Triggers>
+        </Style>
+
+        <!-- Estilo para las leyendas de ayuda -->
+        <Style x:Key="HelpTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontStyle" Value="Italic"/>
+            <Setter Property="Foreground" Value="#78909C"/>
+            <Setter Property="Margin" Value="4,6,4,4"/>
         </Style>
     </Window.Resources>
 
@@ -218,12 +283,11 @@
                           Foreground="#2C3E50"
                           HorizontalAlignment="Center"
                           Margin="0,0,0,8"/>
-                <TextBlock x:Name="NombreLocalTextBlock" 
-                          Text="Local Centro Comercial" 
-                          FontSize="16" 
-                          FontWeight="Medium"
-                          Foreground="#546E7A"
-                          HorizontalAlignment="Center"/>
+                <TextBlock x:Name="NombreLocalTextBlock"
+                              FontSize="16" 
+                              FontWeight="Medium"
+                              Foreground="#546E7A"
+                              HorizontalAlignment="Center"/>
             </StackPanel>
         </Border>
 
@@ -252,11 +316,24 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Título de la lista -->
-                    <Border Grid.Row="0" 
+                    <!-- Leyenda de ayuda para doble clic - PRIMERO -->
+                    <Border >
+                        <TextBlock Style="{StaticResource HelpTextStyle}"
+                                  Foreground="#454545"
+                                  TextAlignment="Left">
+                            <Run Text="💡"/>
+                            <Run Text="Haga doble clic" FontWeight="SemiBold"/>
+                            <Run Text="en un mantenimiento para editarlo"/>
+                        </TextBlock>
+                    </Border>
+
+                    <!-- Título de la lista - SEGUNDO -->
+                    <Border Grid.Row="1" 
                             Background="#F8F9FA"
                             BorderBrush="#E0E0E0"
                             BorderThickness="0,0,0,1"
@@ -268,13 +345,15 @@
                     </Border>
 
                     <!-- Lista -->
-                    <ListBox Grid.Row="1" 
+                    <ListBox Grid.Row="2" 
                             x:Name="MantenimientosListBox"
                             BorderThickness="0"
                             Background="White"
                             ItemContainerStyle="{StaticResource MantenimientoItemStyle}"
                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                            ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            ScrollViewer.VerticalScrollBarVisibility="Auto"
+                            MouseDoubleClick="MantenimientosListBox_MouseDoubleClick"
+                            SelectionChanged="MantenimientosListBox_SelectionChanged">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -305,9 +384,11 @@
                                                   Margin="0,0,4,0"/>
                                         <TextBlock FontSize="12" 
                                                   Foreground="#546E7A">
+                                            <Run Text="{Binding Dia}"/>
+                                            <Run Text="/"/>
                                             <Run Text="{Binding Mes}"/>
                                             <Run Text="/"/>
-                                            <Run Text="{Binding Año}"/>
+                                            <Run Text="{Binding Anio}"/>
                                         </TextBlock>
                                     </StackPanel>
 
@@ -322,90 +403,24 @@
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
-
-                        <!-- Datos de ejemplo -->
-                        <ListBoxItem>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock Text="Revisión eléctrica general" 
-                                              FontSize="14" 
-                                              FontWeight="SemiBold"
-                                              Foreground="#2C3E50"
-                                              Margin="0,0,0,4"/>
-                                    <TextBlock Text="Inspección de tableros, cableado y tomas eléctricas" 
-                                              FontSize="12" 
-                                              Foreground="#95A5A6"
-                                              TextWrapping="Wrap"/>
-                                </StackPanel>
-
-                                <StackPanel Grid.Column="1" 
-                                           Orientation="Horizontal" 
-                                           VerticalAlignment="Center"
-                                           Margin="0,0,16,0">
-                                    <TextBlock Text="📅 " 
-                                              FontSize="12"
-                                              Margin="0,0,4,0"/>
-                                    <TextBlock Text="Febrero/2025" 
-                                              FontSize="12" 
-                                              Foreground="#546E7A"/>
-                                </StackPanel>
-
-                                <TextBlock Grid.Column="2" 
-                                          Text="$ 1,200.00" 
-                                          VerticalAlignment="Center"
-                                          FontSize="13" 
-                                          FontWeight="SemiBold"
-                                          Foreground="#4CAF50"/>
-                            </Grid>
-                        </ListBoxItem>
-
-                        <ListBoxItem>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock Text="Mantenimiento de aire acondicionado" 
-                                              FontSize="14" 
-                                              FontWeight="SemiBold"
-                                              Foreground="#2C3E50"
-                                              Margin="0,0,0,4"/>
-                                    <TextBlock Text="Limpieza de filtros y revisión de gas refrigerante" 
-                                              FontSize="12" 
-                                              Foreground="#95A5A6"
-                                              TextWrapping="Wrap"/>
-                                </StackPanel>
-
-                                <StackPanel Grid.Column="1" 
-                                           Orientation="Horizontal" 
-                                           VerticalAlignment="Center"
-                                           Margin="0,0,16,0">
-                                    <TextBlock Text="📅 " 
-                                              FontSize="12"
-                                              Margin="0,0,4,0"/>
-                                    <TextBlock Text="Abril/2025" 
-                                              FontSize="12" 
-                                              Foreground="#546E7A"/>
-                                </StackPanel>
-
-                                <TextBlock Grid.Column="2" 
-                                          Text="$ 850.00" 
-                                          VerticalAlignment="Center"
-                                          FontSize="13" 
-                                          FontWeight="SemiBold"
-                                          Foreground="#4CAF50"/>
-                            </Grid>
-                        </ListBoxItem>
                     </ListBox>
+
+                    <!-- Indicador de modo edición -->
+                    <Border Grid.Row="3"
+                            x:Name="ModoEdicionBorder"
+                            Background="#E8F5E9"
+                            BorderBrush="#4CAF50"
+                            BorderThickness="0,2,0,0"
+                            Padding="12,8"
+                            Visibility="Collapsed">
+                        <TextBlock FontSize="12"
+                                  FontWeight="SemiBold"
+                                  Foreground="#2E7D32"
+                                  TextAlignment="Center">
+                            <Run Text="✏️ MODO EDICIÓN ACTIVO"/>
+                            <Run Text="- Modifique los campos y presione 'Modificar' o 'Cancelar'"/>
+                        </TextBlock>
+                    </Border>
                 </Grid>
             </Border>
 
@@ -521,22 +536,45 @@
                                    Orientation="Horizontal">
                             <Button x:Name="GuardarButton"
                                    Content="💾 Guardar"
-                                   Style="{StaticResource GuardarButtonStyle}"/>
+                                   Style="{StaticResource GuardarButtonStyle}" 
+                                   Click="GuardarButton_Click"/>
 
                             <Button x:Name="EditarButton"
-                                   Content="✏️ Editar"
-                                   Style="{StaticResource EditarButtonStyle}"/>
+                                   Content="✏️ Modificar"
+                                   Style="{StaticResource EditarButtonStyle}" 
+                                   Click="EditarButton_Click"
+                                   IsEnabled="False"/>
+
+                            <Button x:Name="CancelarButton"
+                                   Content="↩️ Cancelar"
+                                   Style="{StaticResource CancelarButtonStyle}" 
+                                   Click="CancelarButton_Click"
+                                   Visibility="Collapsed"/>
 
                             <Button x:Name="EliminarButton"
                                    Content="🗑️ Eliminar"
-                                   Style="{StaticResource EliminarButtonStyle}"/>
+                                   Style="{StaticResource EliminarButtonStyle}" 
+                                   Click="EliminarButton_Click"
+                                   IsEnabled="False"/>
                         </StackPanel>
 
                         <Button Grid.Column="1" 
                                x:Name="CerrarButton"
                                Content="← Cerrar"
-                               Style="{StaticResource CerrarButtonStyle}"/>
+                               Style="{StaticResource CerrarButtonStyle}"
+                               Click="CerrarButton_Click"/>
                     </Grid>
+
+                    <!-- Leyenda de ayuda para selección/eliminación -->
+                    <Border>
+                        <TextBlock Style="{StaticResource HelpTextStyle}"
+                                  Foreground="#454545"
+                                  TextAlignment="Left">
+                            <Run Text="💡"/>
+                            <Run Text="Haga un clic en una actividad de mantenimiento" FontWeight="SemiBold"/>
+                            <Run Text="para seleccionar y poder eliminar"/>
+                        </TextBlock>
+                    </Border>
                 </StackPanel>
             </Border>
         </Grid>

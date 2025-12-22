@@ -145,32 +145,46 @@
 
         <!-- Estilo para los elementos de la lista -->
         <Style x:Key="ListBoxItemStyle" TargetType="ListBoxItem">
-            <Setter Property="Height" Value="50"/>
+            <Setter Property="Height" Value="55"/>
             <Setter Property="Padding" Value="16,12"/>
-            <Setter Property="BorderThickness" Value="0,0,0,1"/>
-            <Setter Property="BorderBrush" Value="#E0E0E0"/>
             <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
-                        <Border Background="{TemplateBinding Background}"
-                               BorderBrush="{TemplateBinding BorderBrush}"
-                               BorderThickness="{TemplateBinding BorderThickness}"
-                               Padding="{TemplateBinding Padding}">
-                            <ContentPresenter/>
+                        <Border x:Name="Bd"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="Transparent"
+                        BorderThickness="0">
+                            <Grid>
+                                <!-- Barra lateral -->
+                                <Border x:Name="SelectionBar"
+                                Width="4"
+                                Background="Transparent"
+                                HorizontalAlignment="Left"/>
+
+                                <ContentPresenter Margin="8,0,0,0"
+                                                    VerticalAlignment="Center"/>
+                            </Grid>
                         </Border>
+
+                        <ControlTemplate.Triggers>
+                            <!-- SELECCIONADO -->
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#E3F2FD"/>
+                                <Setter TargetName="SelectionBar" Property="Background" Value="#1976D2"/>
+                            </Trigger>
+
+                            <!-- HOVER -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#F1F8FF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#F5F8FA"/>
-                    <Setter Property="Foreground" Value="#2C3E50"/>
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FAFBFC"/>
-                </Trigger>
-            </Style.Triggers>
         </Style>
     </Window.Resources>
 
@@ -248,7 +262,8 @@
         Background="White"
         ItemContainerStyle="{StaticResource ListBoxItemStyle}"
         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-        ScrollViewer.VerticalScrollBarVisibility="Auto">
+        ScrollViewer.VerticalScrollBarVisibility="Auto"
+        MouseDoubleClick="LocalesListBox_MouseDoubleClick">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel>
@@ -269,10 +284,14 @@
                             BorderBrush="#E0E0E0"
                             BorderThickness="0,1,0,0"
                             Padding="16,10">
-                        <TextBlock Text="Total: 4 locales registrados" 
-                                  FontSize="11" 
-                                  Foreground="#546E7A"
-                                  FontStyle="Italic"/>
+                        <TextBlock FontSize="11"
+                           Foreground="#546E7A"
+                           FontStyle="Italic">
+                           <TextBlock.Text>
+                             <Binding ElementName="LocalesListBox" Path="Items.Count"
+                                 StringFormat="Total: {0} locales registrados"/>
+                           </TextBlock.Text>
+                        </TextBlock>
                     </Border>
                 </Grid>
             </Border>
