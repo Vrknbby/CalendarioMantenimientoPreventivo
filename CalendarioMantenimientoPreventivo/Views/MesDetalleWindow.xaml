@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Detalle del Mes" 
-        Height="858" 
-        Width="972"
+        Height="1021" 
+        Width="1258"
         MinHeight="600"
         MinWidth="750"
         WindowStartupLocation="CenterScreen"
@@ -22,17 +22,16 @@
             <Setter Property="BorderBrush" Value="#E0E0E0"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Margin" Value="2"/>
-            <Setter Property="MinHeight" Value="70"/>
+            <Setter Property="MinHeight" Value="160"/>
             <Setter Property="Cursor" Value="Hand"/>
         </Style>
 
         <!-- Estilo dinámico para días del calendario -->
         <Style x:Key="DiaCalendarioStyle"
-       TargetType="Border"
-       BasedOn="{StaticResource DiaBaseStyle}">
+               TargetType="Border"
+               BasedOn="{StaticResource DiaBaseStyle}">
 
             <Style.Triggers>
-
                 <!-- Días de otro mes -->
                 <DataTrigger Binding="{Binding EsDelMesActual}" Value="False">
                     <Setter Property="Background" Value="#F5F5F5"/>
@@ -57,9 +56,7 @@
                 </MultiDataTrigger>
 
                 <!-- 🔥 OPACAR cuando hay drag activo -->
-                <DataTrigger Binding="{Binding DataContext.HayDragActivo,
-                     RelativeSource={RelativeSource AncestorType=Window}}"
-                     Value="True">
+                <DataTrigger Binding="{Binding DataContext.HayDragActivo, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
                     <Setter Property="Opacity" Value="0.4"/>
                 </DataTrigger>
 
@@ -71,59 +68,43 @@
                     <Setter Property="BorderThickness" Value="3"/>
                     <Setter Property="Effect">
                         <Setter.Value>
-                            <DropShadowEffect
-                        Color="Black"
-                        BlurRadius="15"
-                        ShadowDepth="4"
-                        Opacity="0.25"/>
+                            <DropShadowEffect Color="Black"
+                                            BlurRadius="15"
+                                            ShadowDepth="4"
+                                            Opacity="0.25"/>
                         </Setter.Value>
                     </Setter>
                 </DataTrigger>
 
-                <!-- Hover (solo si no está siendo arrastrado) -->
+                <!-- Hover -->
                 <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding RelativeSource={RelativeSource Self},
-                                     Path=IsMouseOver}"
-                   Value="True"/>
-                        <Condition Binding="{Binding EsArrastrado}"
-                   Value="False"/>
+                        <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver}" Value="True"/>
+                        <Condition Binding="{Binding EsArrastrado}" Value="False"/>
                     </MultiDataTrigger.Conditions>
-
                     <Setter Property="Effect">
                         <Setter.Value>
-                            <DropShadowEffect
-                Color="Black"
-                Opacity="0.15"
-                BlurRadius="8"
-                ShadowDepth="2"/>
+                            <DropShadowEffect Color="Black"
+                                            Opacity="0.15"
+                                            BlurRadius="8"
+                                            ShadowDepth="2"/>
                         </Setter.Value>
                     </Setter>
                 </MultiDataTrigger>
-
             </Style.Triggers>
         </Style>
-        
+
         <!-- Estilo para el número del día -->
         <Style x:Key="NumeroDiaStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Foreground" Value="#2C3E50"/>
-            <Setter Property="Margin" Value="8,6,8,4"/>
+            <Setter Property="Margin" Value="8,6,8,8"/>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding EsDelMesActual}" Value="False">
                     <Setter Property="Foreground" Value="#95A5A6"/>
                 </DataTrigger>
             </Style.Triggers>
-        </Style>
-
-        <!-- Estilo para indicador de mantenimientos -->
-        <Style x:Key="IndicadorMantenimientoStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="Foreground" Value="#2196F3"/>
-            <Setter Property="FontWeight" Value="Medium"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="0,4,0,0"/>
         </Style>
 
         <!-- Estilo para encabezados de días de la semana -->
@@ -194,10 +175,10 @@
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center">
                     <TextBlock Text="{Binding MesAnioTexto}"
-                              FontSize="24" 
-                              FontWeight="SemiBold" 
-                              Foreground="#2C3E50"
-                              HorizontalAlignment="Center"/>
+                              FontSize="26" 
+                            FontWeight="Bold" 
+                            Foreground="#2C3E50"
+                            VerticalAlignment="Center"/>
                     <TextBlock Text="Mantenimientos programados" 
                               FontSize="12" 
                               Foreground="#95A5A6"
@@ -253,7 +234,7 @@
                                    BorderBrush="#2196F3"
                                    BorderThickness="2"
                                    Margin="0,0,8,0"/>
-                            <TextBlock Text="Día con mantenimiento programado" 
+                            <TextBlock Text="Día con mantenimiento programado - Puede arrastrar mantenimientos entre días" 
                                       FontSize="12" 
                                       Foreground="#546E7A"
                                       VerticalAlignment="Center"/>
@@ -292,22 +273,73 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Border Style="{StaticResource DiaCalendarioStyle}"
-                                    AllowDrop="True"
-                                    PreviewMouseLeftButtonDown="Dia_PreviewMouseLeftButtonDown"
-                                    MouseMove="Dia_MouseMove"
-                                    DragEnter="Dia_DragEnter"
-                                    DragLeave="Dia_DragLeave"
-                                    Drop="Dia_Drop"
-                                    MouseLeftButtonUp="Dia_Click">
-                                    <StackPanel>
-                                        <TextBlock Text="{Binding Dia}" 
-                                           Style="{StaticResource NumeroDiaStyle}"/>
+                                       AllowDrop="True"
+                                       PreviewMouseLeftButtonDown="Dia_PreviewMouseLeftButtonDown"
+                                       MouseMove="Dia_MouseMove"
+                                       DragEnter="Dia_DragEnter"
+                                       DragLeave="Dia_DragLeave"
+                                       Drop="Dia_Drop"
+                                       MouseLeftButtonUp="Dia_Click">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
 
-                                                                <TextBlock Text="{Binding TextoMantenimientos}" 
-                                           Style="{StaticResource IndicadorMantenimientoStyle}"
-                                           Visibility="{Binding TieneMantenimientos,
-                                           Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                    </StackPanel>
+                                        <!-- Número del día -->
+                                        <TextBlock Grid.Row="0"
+                                                  Text="{Binding Dia}" 
+                                                  Style="{StaticResource NumeroDiaStyle}"/>
+
+                                        <!-- Detalles del mantenimiento - Usar todo el espacio disponible -->
+                                        <Grid Grid.Row="1"
+                                             Margin="8,4,8,8"
+                                             Visibility="{Binding TieneMantenimientos, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+
+                                            <!-- Mostrar solo el primer mantenimiento (ya que es uno por día) -->
+                                            <Border Grid.Row="0"
+                                                   Background="#1976D2"
+                                                   CornerRadius="3"
+                                                   Padding="8,4"
+                                                   Margin="0,0,0,6">
+                                                <TextBlock FontSize="12"
+                                                          FontWeight="Bold"
+                                                          Foreground="White"
+                                                          TextWrapping="Wrap"
+                                                          TextAlignment="Center">
+                                                    <Run Text="📍 "/>
+                                                    <Run Text="{Binding Mantenimientos[0].Local.Nombre, Mode=OneWay}"/>
+                                                </TextBlock>
+                                            </Border>
+
+                                            <!-- Nombre del mantenimiento -->
+                                            <TextBlock Grid.Row="1"
+                                                      Text="{Binding Mantenimientos[0].Nombre}"
+                                                      FontSize="13"
+                                                      FontWeight="Bold"
+                                                      Foreground="#2C3E50"
+                                                      TextWrapping="Wrap"
+                                                      TextAlignment="Center"
+                                                      Margin="0,0,0,6"/>
+
+                                            <!-- Descripción -->
+                                            <ScrollViewer Grid.Row="2"
+                                                        VerticalScrollBarVisibility="Auto"
+                                                        HorizontalScrollBarVisibility="Disabled">
+                                                <TextBlock Text="{Binding Mantenimientos[0].Descripcion}"
+                                                          FontSize="11"
+                                                          Foreground="#546E7A"
+                                                          TextWrapping="Wrap"
+                                                          TextAlignment="Left"
+                                                          LineHeight="16"/>
+                                            </ScrollViewer>
+                                        </Grid>
+                                    </Grid>
                                 </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

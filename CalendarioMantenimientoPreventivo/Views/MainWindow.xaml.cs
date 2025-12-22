@@ -2,6 +2,7 @@
 using CalendarioMantenimientoPreventivo.Models.ViewModels;
 using CalendarioMantenimientoPreventivo.Service;
 using CalendarioMantenimientoPreventivo.Views;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Security.Cryptography.Xml;
@@ -42,6 +43,20 @@ namespace CalendarioMantenimientoPreventivo.Views
             }
         }
 
+        private bool _iniciarConWindows;
+        public bool IniciarConWindows
+        {
+            get => _iniciarConWindows;
+            set
+            {
+                if (_iniciarConWindows != value)
+                {
+                    _iniciarConWindows = value;
+                    NotifyPropertyChanged(nameof(IniciarConWindows));
+                }
+            }
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private void NotifyPropertyChanged(string propertyName)
@@ -68,27 +83,47 @@ namespace CalendarioMantenimientoPreventivo.Views
         {
             Meses.Clear();
 
-            var mantenimientosPorMes = _context.Mantenimientos
+            var mantenimientosPorMesYLocal = _context.Mantenimientos
+                .Include(m => m.Local)
                 .Where(m => m.Anio == AnioSeleccionado)
                 .GroupBy(m => m.Mes)
-                .ToDictionary(g => g.Key, g => g.Count());
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.GroupBy(m => m.Local)
+                          .Select(lg => new { Local = lg.Key, Cantidad = lg.Count() })
+                          .ToList()
+                );
 
             string[] nombresMeses = { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
                                      "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" };
 
             for (int i = 1; i <= 12; i++)
             {
-                int cantidadMantenimientos = mantenimientosPorMes.ContainsKey(i)
-                    ? mantenimientosPorMes[i]
-                    : 0;
+                var detalleLocales = new ObservableCollection<LocalMantenimientoInfo>();
+                int totalMantenimientos = 0;
+
+                if (mantenimientosPorMesYLocal.ContainsKey(i))
+                {
+                    var localesDelMes = mantenimientosPorMesYLocal[i];
+                    foreach (var localInfo in localesDelMes)
+                    {
+                        detalleLocales.Add(new LocalMantenimientoInfo
+                        {
+                            NombreLocal = localInfo.Local.Nombre,
+                            CantidadMantenimientos = localInfo.Cantidad
+                        });
+                        totalMantenimientos += localInfo.Cantidad;
+                    }
+                }
 
                 Meses.Add(new MesInfo
                 {
                     NumeroMes = i,
                     NombreMes = nombresMeses[i - 1],
-                    CantidadMantenimientos = cantidadMantenimientos,
-                    TieneMantenimientos = cantidadMantenimientos > 0,
-                    Anio = AnioSeleccionado
+                    CantidadMantenimientos = totalMantenimientos,
+                    TieneMantenimientos = totalMantenimientos > 0,
+                    Anio = AnioSeleccionado,
+                    DetalleLocales = detalleLocales
                 });
             }
         }
@@ -142,14 +177,24 @@ namespace CalendarioMantenimientoPreventivo.Views
         {
             if (sender is Border border && border.DataContext is MesInfo mesInfo)
             {
+                this.Hide();
+
                 var mesDetalleWindow = new MesDetalleWindow(mesInfo.Anio, mesInfo.NumeroMes, _context);
                 mesDetalleWindow.Owner = this;
                 mesDetalleWindow.Closed += (s, args) =>
                 {
                     ActualizarCalendario();
+                    this.Show();
                 };
-                mesDetalleWindow.ShowDialog();
+                mesDetalleWindow.Show();
             }
+        }
+
+        private void AyudaButton_Click(object sender, RoutedEventArgs e)
+        {
+            var ayudaWindow = new AyudaWindow();
+            ayudaWindow.Owner = this;
+            ayudaWindow.ShowDialog();
         }
     }
 }

@@ -10,6 +10,7 @@ namespace CalendarioMantenimientoPreventivo.Models
     public class Local : INotifyPropertyChanged
     {
         private string _nombre = string.Empty;
+        private DateTime _fechaRegistro;
 
         public int Id { get; set; }
 
@@ -22,6 +23,19 @@ namespace CalendarioMantenimientoPreventivo.Models
                 {
                     _nombre = value;
                     OnPropertyChanged(nameof(Nombre));
+                }
+            }
+        }
+
+        public DateTime FechaRegistro
+        {
+            get => _fechaRegistro;
+            set
+            {
+                if (_fechaRegistro != value)
+                {
+                    _fechaRegistro = value;
+                    OnPropertyChanged(nameof(FechaRegistro));
                 }
             }
         }

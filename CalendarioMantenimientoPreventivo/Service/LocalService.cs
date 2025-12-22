@@ -1,5 +1,6 @@
 ﻿using CalendarioMantenimientoPreventivo.Data;
 using CalendarioMantenimientoPreventivo.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,21 +24,28 @@ namespace CalendarioMantenimientoPreventivo.Service
         public void CargarLocales()
         {
             Locales.Clear();
-            foreach (var local in _context.Locales)
+            var locales = _context.Locales
+                .OrderByDescending(l => l.FechaRegistro)
+                .ToList();
+
+            foreach (var local in locales)
                 Locales.Add(local);
         }
 
-        public void AgregarLocal(string nombre)
+        public Local AgregarLocal(string nombre)
         {
             var local = new Local
             {
-                Nombre = nombre
+                Nombre = nombre,
+                FechaRegistro = DateTime.Now
             };
 
             _context.Locales.Add(local);
             _context.SaveChanges();
 
-            Locales.Add(local);
+            Locales.Insert(0, local);
+
+            return local;
         }
 
         public void EliminarLocal(Local local)
@@ -56,6 +64,38 @@ namespace CalendarioMantenimientoPreventivo.Service
 
             local.Nombre = nuevoNombre;
             _context.SaveChanges();
+        }
+
+        public List<Local> BuscarLocales(string textoBusqueda)
+        {
+            if (string.IsNullOrWhiteSpace(textoBusqueda))
+            {
+                return _context.Locales
+                    .Include(l => l.Mantenimientos)
+                    .OrderByDescending(l => l.FechaRegistro)
+                    .ToList();
+            }
+            string busquedaPattern = $"%{textoBusqueda}%";
+
+            return _context.Locales
+                .Include(l => l.Mantenimientos)
+                .Where(l => EF.Functions.Like(l.Nombre, busquedaPattern))
+                .OrderByDescending(l => l.FechaRegistro)
+                .ToList();
+        }
+
+        public int ObtenerTotalLocales()
+        {
+            return _context.Locales.Count();
+        }
+
+        public int ObtenerTotalLocalesFiltrados(string textoBusqueda)
+        {
+            if (string.IsNullOrWhiteSpace(textoBusqueda))
+                return ObtenerTotalLocales();
+
+            return _context.Locales
+                .Count(l => l.Nombre.Contains(textoBusqueda));
         }
     }
 }

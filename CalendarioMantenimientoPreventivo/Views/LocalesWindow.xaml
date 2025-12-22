@@ -5,14 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Gestión de Locales" 
-        Height="571" 
-        Width="756"
-        MinHeight="450"
-        MinWidth="650"
+        Height="838" 
+        Width="1046"
+        MinHeight="600"
+        MinWidth="850"
         WindowStartupLocation="CenterScreen"
         Background="#FAFAFA">
 
     <Window.Resources>
+        <!-- Convertidor de visibilidad inversa -->
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+
         <!-- Estilo para botón Agregar -->
         <Style x:Key="AgregarButtonStyle" TargetType="Button">
             <Setter Property="Height" Value="45"/>
@@ -143,41 +146,86 @@
             </Style.Triggers>
         </Style>
 
-        <!-- Estilo para los elementos de la lista -->
-        <Style x:Key="ListBoxItemStyle" TargetType="ListBoxItem">
-            <Setter Property="Height" Value="55"/>
-            <Setter Property="Padding" Value="16,12"/>
-            <Setter Property="Background" Value="White"/>
+        <!-- Estilo para botones pequeños (paginación y búsqueda) -->
+        <Style x:Key="SmallButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="MinWidth" Value="80"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#546E7A"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                               CornerRadius="3"
+                               Padding="12,0">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#BDBDBD"/>
+                    <Setter Property="Foreground" Value="#757575"/>
+                    <Setter Property="Cursor" Value="None"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#607D8B"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#455A64"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
 
+        <!-- Estilo para botón limpiar búsqueda -->
+        <Style x:Key="ClearButtonStyle" TargetType="Button" BasedOn="{StaticResource SmallButtonStyle}">
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="Foreground" Value="#546E7A"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#BDBDBD"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#9E9E9E"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Estilo para los elementos de la lista -->
+        <Style x:Key="ListBoxItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Height" Value="75"/>
+            <Setter Property="Padding" Value="16,12"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
                         <Border x:Name="Bd"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="Transparent"
-                        BorderThickness="0">
+                               Background="{TemplateBinding Background}"
+                               BorderBrush="{TemplateBinding BorderBrush}"
+                               BorderThickness="{TemplateBinding BorderThickness}">
                             <Grid>
-                                <!-- Barra lateral -->
                                 <Border x:Name="SelectionBar"
-                                Width="4"
-                                Background="Transparent"
-                                HorizontalAlignment="Left"/>
-
+                                       Width="4"
+                                       Background="Transparent"
+                                       HorizontalAlignment="Left"/>
                                 <ContentPresenter Margin="8,0,0,0"
-                                                    VerticalAlignment="Center"/>
+                                                VerticalAlignment="Center"/>
                             </Grid>
                         </Border>
-
                         <ControlTemplate.Triggers>
-                            <!-- SELECCIONADO -->
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter TargetName="Bd" Property="Background" Value="#E3F2FD"/>
                                 <Setter TargetName="SelectionBar" Property="Background" Value="#1976D2"/>
                             </Trigger>
-
-                            <!-- HOVER -->
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="Bd" Property="Background" Value="#F1F8FF"/>
                             </Trigger>
@@ -239,7 +287,9 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
@@ -255,43 +305,179 @@
                                   Foreground="#2C3E50"/>
                     </Border>
 
+                    <!-- Buscador -->
+                    <Border Grid.Row="1"
+                            Background="#F8F9FA"
+                            BorderBrush="#E0E0E0"
+                            BorderThickness="0,0,0,1"
+                            Padding="16,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox Grid.Column="0"
+                                    x:Name="BuscarTextBox"
+                                    Height="32"
+                                    Padding="8,0"
+                                    FontSize="13"
+                                    VerticalContentAlignment="Center"
+                                    BorderBrush="#D0D0D0"
+                                    BorderThickness="1"
+                                    Background="White"
+                                    KeyDown="BuscarTextBox_KeyDown">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Style.Triggers>
+                                            <Trigger Property="Text" Value="">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <VisualBrush Stretch="None" AlignmentX="Left">
+                                                            <VisualBrush.Visual>
+                                                                <TextBlock Text="🔍 Buscar por nombre..."
+                                                                          Foreground="#9E9E9E"
+                                                                          FontSize="13"
+                                                                          Margin="8,0,0,0"/>
+                                                            </VisualBrush.Visual>
+                                                        </VisualBrush>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+
+                            <Button Grid.Column="1"
+                                   Content="Buscar"
+                                   Style="{StaticResource SmallButtonStyle}"
+                                   Margin="8,0,0,0"
+                                   Click="BuscarButton_Click"/>
+
+                            <Button Grid.Column="2"
+                                   Content="✕"
+                                   Style="{StaticResource ClearButtonStyle}"
+                                   Margin="8,0,0,0"
+                                   MinWidth="32"
+                                   ToolTip="Limpiar búsqueda"
+                                   Visibility="{Binding HayFiltroBusqueda, Converter={StaticResource BoolToVisConverter}}"
+                                   Click="LimpiarBusquedaButton_Click"/>
+                        </Grid>
+                    </Border>
+
                     <!-- Lista de locales -->
-                    <ListBox Grid.Row="1" 
-        x:Name="LocalesListBox"
-        BorderThickness="0"
-        Background="White"
-        ItemContainerStyle="{StaticResource ListBoxItemStyle}"
-        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-        ScrollViewer.VerticalScrollBarVisibility="Auto"
-        MouseDoubleClick="LocalesListBox_MouseDoubleClick">
+                    <ListBox Grid.Row="2" 
+                            x:Name="LocalesListBox"
+                            ItemsSource="{Binding LocalesPaginados}"
+                            BorderThickness="0"
+                            Background="White"
+                            ItemContainerStyle="{StaticResource ListBoxItemStyle}"
+                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                            ScrollViewer.VerticalScrollBarVisibility="Auto"
+                            MouseDoubleClick="LocalesListBox_MouseDoubleClick">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Nombre}" 
-                          FontSize="14" 
-                          FontWeight="Medium"
-                          Foreground="#2C3E50"
-                          Margin="0,0,0,2"/>
-                                </StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Información del local -->
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="{Binding Nombre}" 
+                                                  FontSize="14" 
+                                                  FontWeight="SemiBold"
+                                                  Foreground="#2C3E50"
+                                                  Margin="0,0,0,4"/>
+                                        <TextBlock FontSize="11"
+                                                  Foreground="#757575">
+                                            <Run Text="Mantenimientos: "/>
+                                            <Run Text="{Binding Mantenimientos.Count, Mode=OneWay}" FontWeight="Medium"/>
+                                        </TextBlock>
+                                    </StackPanel>
+
+                                    <!-- Fecha de registro -->
+                                    <StackPanel Grid.Column="1"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Right"
+                                                Margin="0,0,16,0">
+                                        <TextBlock Text="📅 Registrado" 
+                                                  FontSize="10"
+                                                  Foreground="#9E9E9E"
+                                                  HorizontalAlignment="Right"
+                                                  Margin="0,0,0,2"/>
+                                        <TextBlock Text="{Binding FechaRegistro, StringFormat='{}{0:dd/MM/yyyy}'}" 
+                                                  FontSize="11"
+                                                  FontWeight="Medium"
+                                                  Foreground="#546E7A"
+                                                  HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
-
                     </ListBox>
 
-                    <!-- Contador de locales -->
-                    <Border Grid.Row="2" 
+                    <!-- Leyenda de doble click -->
+                    <Border Grid.Row="3"
+                            Background="Transparent"
+                            Padding="12,8">
+                        <TextBlock Text="💡 Haga doble clic sobre un local para ver sus mantenimientos"
+                                  FontSize="11"
+                                  FontStyle="Italic"
+                                  Foreground="#757575"
+                                  TextAlignment="Center"/>
+                    </Border>
+
+                    <!-- Footer con paginación y contador -->
+                    <Border Grid.Row="4" 
                             Background="#F8F9FA"
                             BorderBrush="#E0E0E0"
                             BorderThickness="0,1,0,0"
                             Padding="16,10">
-                        <TextBlock FontSize="11"
-                           Foreground="#546E7A"
-                           FontStyle="Italic">
-                           <TextBlock.Text>
-                             <Binding ElementName="LocalesListBox" Path="Items.Count"
-                                 StringFormat="Total: {0} locales registrados"/>
-                           </TextBlock.Text>
-                        </TextBlock>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Contador de registros -->
+                            <TextBlock Grid.Row="0"
+                                      Text="{Binding TextoContador}"
+                                      FontSize="11"
+                                      Foreground="#546E7A"
+                                      FontStyle="Italic"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,0,0,8"/>
+
+                            <!-- Controles de paginación -->
+                            <StackPanel Grid.Row="1"
+                                       Orientation="Horizontal"
+                                       HorizontalAlignment="Center">
+
+                                <Button Content="◀ Anterior"
+                                       Style="{StaticResource SmallButtonStyle}"
+                                       IsEnabled="{Binding PuedeIrAnterior}"
+                                       Click="PaginaAnterior_Click"
+                                       Margin="0,0,8,0"/>
+
+                                <TextBlock Text="{Binding TextoPaginacion}"
+                                          FontSize="12"
+                                          FontWeight="Medium"
+                                          Foreground="#2C3E50"
+                                          VerticalAlignment="Center"
+                                          Margin="0,0,8,0"
+                                          MinWidth="100"
+                                          TextAlignment="Center"/>
+
+                                <Button Content="Siguiente ▶"
+                                       Style="{StaticResource SmallButtonStyle}"
+                                       IsEnabled="{Binding PuedeIrSiguiente}"
+                                       Click="PaginaSiguiente_Click"/>
+                            </StackPanel>
+                        </Grid>
                     </Border>
                 </Grid>
             </Border>
@@ -309,17 +495,20 @@
                 <!-- Botón Agregar -->
                 <Button x:Name="AgregarButton"
                        Content="➕ Agregar Local"
-                       Style="{StaticResource AgregarButtonStyle}" Click="AgregarButton_Click"/>
+                       Style="{StaticResource AgregarButtonStyle}" 
+                       Click="AgregarButton_Click"/>
 
                 <!-- Botón Editar -->
                 <Button x:Name="EditarButton"
                        Content="✏️ Editar Local"
-                       Style="{StaticResource EditarButtonStyle}" Click="EditarButton_Click"/>
+                       Style="{StaticResource EditarButtonStyle}" 
+                       Click="EditarButton_Click"/>
 
                 <!-- Botón Eliminar -->
                 <Button x:Name="EliminarButton"
                        Content="🗑️ Eliminar Local"
-                       Style="{StaticResource EliminarButtonStyle}" Click="EliminarButton_Click"/>
+                       Style="{StaticResource EliminarButtonStyle}" 
+                       Click="EliminarButton_Click"/>
 
                 <!-- Separador -->
                 <Border Height="1" 
@@ -329,7 +518,8 @@
                 <!-- Botón Volver -->
                 <Button x:Name="CerrarButton"
                        Content="← Volver"
-                       Style="{StaticResource VolverButtonStyle}" Click="CerrarButton_Click"/>
+                       Style="{StaticResource VolverButtonStyle}" 
+                       Click="CerrarButton_Click"/>
 
             </StackPanel>
         </Grid>

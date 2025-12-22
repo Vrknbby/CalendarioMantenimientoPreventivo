@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -77,6 +78,19 @@ namespace CalendarioMantenimientoPreventivo.Models.ViewModels
                 {
                     _anio = value;
                     OnPropertyChanged(nameof(Anio));
+                }
+            }
+        }
+        private ObservableCollection<LocalMantenimientoInfo> _detalleLocales = new();
+        public ObservableCollection<LocalMantenimientoInfo> DetalleLocales
+        {
+            get => _detalleLocales;
+            set
+            {
+                if (_detalleLocales != value)
+                {
+                    _detalleLocales = value;
+                    OnPropertyChanged(nameof(DetalleLocales));
                 }
             }
         }

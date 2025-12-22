@@ -1,4 +1,5 @@
 ﻿using CalendarioMantenimientoPreventivo.Data;
+using CalendarioMantenimientoPreventivo.Models;
 using CalendarioMantenimientoPreventivo.Models.ViewModels;
 using CalendarioMantenimientoPreventivo.Service;
 using Microsoft.EntityFrameworkCore;
@@ -92,10 +93,15 @@ namespace CalendarioMantenimientoPreventivo.Views
         private void CargarCalendario()
         {
             Dias.Clear();
-            var mantenimientosPorDia = _context.Mantenimientos
+
+            var mantenimientosDelMes = _context.Mantenimientos
+                .Include(m => m.Local)
                 .Where(m => m.Anio == _anio && m.Mes == _mes)
+                .ToList();
+
+            var mantenimientosPorDia = mantenimientosDelMes
                 .GroupBy(m => m.Dia)
-                .ToDictionary(g => g.Key, g => g.Count());
+                .ToDictionary(g => g.Key, g => g.ToList());
 
             DateTime primerDiaMes = new DateTime(_anio, _mes, 1);
             int diasEnMes = DateTime.DaysInMonth(_anio, _mes);
@@ -114,22 +120,24 @@ namespace CalendarioMantenimientoPreventivo.Views
                     Dia = diasEnMesAnterior - diasMesAnterior + Dias.Count + 1,
                     EsDelMesActual = false,
                     TieneMantenimientos = false,
-                    CantidadMantenimientos = 0
+                    CantidadMantenimientos = 0,
+                    Mantenimientos = new ObservableCollection<Mantenimiento>()
                 });
             }
 
             for (int dia = 1; dia <= diasEnMes; dia++)
             {
-                int cantidad = mantenimientosPorDia.ContainsKey(dia)
+                var mantenimientosDelDia = mantenimientosPorDia.ContainsKey(dia)
                     ? mantenimientosPorDia[dia]
-                    : 0;
+                    : new List<Mantenimiento>();
 
                 Dias.Add(new DiaInfo
                 {
                     Dia = dia,
                     EsDelMesActual = true,
-                    TieneMantenimientos = cantidad > 0,
-                    CantidadMantenimientos = cantidad
+                    TieneMantenimientos = mantenimientosDelDia.Count > 0,
+                    CantidadMantenimientos = mantenimientosDelDia.Count,
+                    Mantenimientos = new ObservableCollection<Mantenimiento>(mantenimientosDelDia)
                 });
             }
 
@@ -141,7 +149,8 @@ namespace CalendarioMantenimientoPreventivo.Views
                     Dia = dia,
                     EsDelMesActual = false,
                     TieneMantenimientos = false,
-                    CantidadMantenimientos = 0
+                    CantidadMantenimientos = 0,
+                    Mantenimientos = new ObservableCollection<Mantenimiento>()
                 });
             }
         }

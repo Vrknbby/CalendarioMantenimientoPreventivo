@@ -1,0 +1,298 @@
+﻿<Window x:Class="CalendarioMantenimientoPreventivo.Views.AyudaWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Guía de Uso - Calendario de Mantenimiento" 
+        Height="650" 
+        Width="800"
+        MinHeight="600"
+        MinWidth="750"
+        WindowStartupLocation="CenterScreen"
+        Background="#FAFAFA"
+        ResizeMode="CanResize">
+
+    <Window.Resources>
+        <!-- Estilo para las tarjetas de sección -->
+        <Style x:Key="SeccionCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" 
+                                    Opacity="0.08" 
+                                    BlurRadius="10" 
+                                    ShadowDepth="2"
+                                    Direction="270"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Estilo para títulos de sección -->
+        <Style x:Key="TituloSeccionStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#2C3E50"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+
+        <!-- Estilo para iconos de sección -->
+        <Style x:Key="IconoSeccionStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,12,0"/>
+        </Style>
+
+        <!-- Estilo para texto de contenido -->
+        <Style x:Key="ContenidoTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#546E7A"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="LineHeight" Value="22"/>
+            <Setter Property="Margin" Value="0,4,0,4"/>
+        </Style>
+
+        <!-- Estilo para viñetas -->
+        <Style x:Key="VinetaStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#546E7A"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Margin" Value="20,2,0,2"/>
+        </Style>
+
+        <!-- Estilo para destacados importantes -->
+        <Style x:Key="ImportanteStyle" TargetType="Border">
+            <Setter Property="Background" Value="#FFF3E0"/>
+            <Setter Property="BorderBrush" Value="#FF9800"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="Margin" Value="0,8,0,8"/>
+        </Style>
+
+        <!-- Estilo para botón cerrar -->
+        <Style x:Key="CerrarButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="MinWidth" Value="140"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                               CornerRadius="6"
+                               Padding="24,0">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1976D2"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#1565C0"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" 
+                Background="#2196F3" 
+                Padding="32,24">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,8">
+                    <TextBlock Text="📋" 
+                              FontSize="36" 
+                              VerticalAlignment="Center"
+                              Margin="0,0,16,0"/>
+                    <TextBlock Text="Guía de Uso del Sistema" 
+                              FontSize="28" 
+                              FontWeight="Bold" 
+                              Foreground="White"
+                              VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock Text="Calendario de Mantenimiento Preventivo" 
+                          FontSize="14" 
+                          Foreground="#E3F2FD"
+                          HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Contenido con scroll -->
+        <ScrollViewer Grid.Row="1" 
+                     VerticalScrollBarVisibility="Auto"
+                     Padding="32,24">
+            <StackPanel>
+
+                <!-- Sección: Vista Principal -->
+                <Border Style="{StaticResource SeccionCardStyle}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🗓️" Style="{StaticResource IconoSeccionStyle}"/>
+                            <TextBlock Text="Vista Principal" Style="{StaticResource TituloSeccionStyle}"/>
+                        </StackPanel>
+
+                        <TextBlock Style="{StaticResource ContenidoTextStyle}">
+                            Está visualizando el calendario anual con una vista general de todos los meses del año.
+                        </TextBlock>
+
+                        <TextBlock Style="{StaticResource VinetaStyle}">
+                            <Run Text="•" FontWeight="Bold"/> Los meses con mantenimientos programados aparecen resaltados en color azul.
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource VinetaStyle}">
+                            <Run Text="•" FontWeight="Bold"/> Puede ver cuántos mantenimientos tiene cada local en ese mes.
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource VinetaStyle}">
+                            <Run Text="•" FontWeight="Bold"/> Use las flechas ◀ ▶ para navegar entre años.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- Sección: Revisar Mantenimientos -->
+                <Border Style="{StaticResource SeccionCardStyle}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🔍" Style="{StaticResource IconoSeccionStyle}"/>
+                            <TextBlock Text="Revisar Mantenimientos" Style="{StaticResource TituloSeccionStyle}"/>
+                        </StackPanel>
+
+                        <TextBlock Style="{StaticResource ContenidoTextStyle}">
+                            Para ver los detalles de mantenimientos de un mes específico:
+                        </TextBlock>
+
+                        <TextBlock Style="{StaticResource VinetaStyle}">
+                            <Run Text="1." FontWeight="Bold"/> Haga clic en cualquier mes del calendario.
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource VinetaStyle}">
+                            <Run Text="2." FontWeight="Bold"/> Se abrirá el calendario detallado mostrando todos los días.
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource VinetaStyle}">
+                            <Run Text="3." FontWeight="Bold"/> Los días con mantenimientos programados estarán destacados.
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource VinetaStyle}">
+                            <Run Text="4." FontWeight="Bold"/> Puede arrastrar mantenimientos entre días para ajustar las fechas.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- Sección: Gestionar Locales -->
+                <Border Style="{StaticResource SeccionCardStyle}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="➕" Style="{StaticResource IconoSeccionStyle}"/>
+                            <TextBlock Text="Gestionar Locales y Mantenimientos" Style="{StaticResource TituloSeccionStyle}"/>
+                        </StackPanel>
+
+                        <TextBlock Style="{StaticResource ContenidoTextStyle}">
+                            Use el botón "Gestionar Locales y Mantenimientos" en la parte inferior de la pantalla para:
+                        </TextBlock>
+
+                        <TextBlock Style="{StaticResource VinetaStyle}">
+                            <Run Text="•" FontWeight="Bold"/> Registrar nuevos locales que requieren mantenimiento.
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource VinetaStyle}">
+                            <Run Text="•" FontWeight="Bold"/> Editar o eliminar locales existentes.
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource VinetaStyle}">
+                            <Run Text="•" FontWeight="Bold"/> Programar mantenimientos para futuras fechas.
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource VinetaStyle}">
+                            <Run Text="•" FontWeight="Bold"/> Ver el historial completo de mantenimientos por local.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- Sección: Iniciar con Windows (Importante) -->
+                <Border Style="{StaticResource SeccionCardStyle}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="⚙️" Style="{StaticResource IconoSeccionStyle}"/>
+                            <TextBlock Text="Iniciar con Windows" Style="{StaticResource TituloSeccionStyle}"/>
+                        </StackPanel>
+
+                        <TextBlock Style="{StaticResource ContenidoTextStyle}">
+                            En la esquina superior izquierda encontrará el interruptor "Iniciar con Windows".
+                        </TextBlock>
+
+                        <Border Style="{StaticResource ImportanteStyle}">
+                            <StackPanel>
+                                <TextBlock FontSize="14"
+                                          FontWeight="Bold"
+                                          Foreground="#E65100"
+                                          Margin="0,0,0,8">
+                                    ⚠️ IMPORTANTE
+                                </TextBlock>
+                                <TextBlock FontSize="13"
+                                          Foreground="#BF360C"
+                                          TextWrapping="Wrap">
+                                    Este interruptor DEBE estar ACTIVO para recibir recordatorios de mantenimientos correctamente. 
+                                    Permite que la aplicación se inicie automáticamente cuando encienda su PC.
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- Sección: Consejos Útiles -->
+                <Border Style="{StaticResource SeccionCardStyle}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="💡" Style="{StaticResource IconoSeccionStyle}"/>
+                            <TextBlock Text="Consejos Útiles" Style="{StaticResource TituloSeccionStyle}"/>
+                        </StackPanel>
+
+                        <TextBlock Style="{StaticResource VinetaStyle}">
+                            <Run Text="•" FontWeight="Bold"/> Los mantenimientos se agrupan automáticamente por local para mejor organización.
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource VinetaStyle}">
+                            <Run Text="•" FontWeight="Bold"/> Puede buscar locales específicos usando el buscador en la ventana de gestión.
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource VinetaStyle}">
+                            <Run Text="•" FontWeight="Bold"/> La aplicación ordena los locales por fecha de registro (más recientes primero).
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource VinetaStyle}">
+                            <Run Text="•" FontWeight="Bold"/> Use doble clic en un local para acceder rápidamente a sus mantenimientos.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer con botón cerrar -->
+        <Border Grid.Row="2" 
+                Background="White" 
+                BorderBrush="#E0E0E0"
+                BorderThickness="0,1,0,0"
+                Padding="32,20">
+            <Button x:Name="CerrarButton"
+                   Content="Entendido"
+                   Style="{StaticResource CerrarButtonStyle}"
+                   HorizontalAlignment="Center"
+                   Click="CerrarButton_Click"/>
+        </Border>
+
+    </Grid>
+</Window>

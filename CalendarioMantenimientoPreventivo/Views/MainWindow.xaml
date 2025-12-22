@@ -5,82 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Calendario de Mantenimiento Preventivo" 
-        Height="750" 
-        Width="1100"
+        Height="1021" 
+        Width="1258"
         MinHeight="600"
         MinWidth="900"
         WindowStartupLocation="CenterScreen"
         Background="#FAFAFA">
 
     <Window.Resources>
-        <!-- Estilo base para tarjetas de mes -->
-        <Style x:Key="MonthCardStyle" TargetType="Border">
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="BorderBrush" Value="#D0D0D0"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="4"/>
-            <Setter Property="Margin" Value="12"/>
-            <Setter Property="Padding" Value="20"/>
-            <Setter Property="MinHeight" Value="120"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect Color="Black" 
-                                    Opacity="0.06" 
-                                    BlurRadius="8" 
-                                    ShadowDepth="2"
-                                    Direction="270"/>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Effect">
-                        <Setter.Value>
-                            <DropShadowEffect Color="Black" 
-                                            Opacity="0.12" 
-                                            BlurRadius="12" 
-                                            ShadowDepth="3"
-                                            Direction="270"/>
-                        </Setter.Value>
-                    </Setter>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
-        <!-- Estilo para tarjetas con mantenimiento programado -->
-        <Style x:Key="MonthCardWithMaintenanceStyle" 
-               TargetType="Border" 
-               BasedOn="{StaticResource MonthCardStyle}">
-            <Setter Property="Background" Value="#F5F8FA"/>
-            <Setter Property="BorderBrush" Value="#607D8B"/>
-            <Setter Property="BorderThickness" Value="1.5"/>
-        </Style>
-
-        <!-- Estilo para nombre del mes -->
-        <Style x:Key="MonthTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="18"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="Foreground" Value="#2C3E50"/>
-            <Setter Property="Margin" Value="0,0,0,8"/>
-        </Style>
-
-        <!-- Estilo para texto informativo -->
-        <Style x:Key="InfoTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="Foreground" Value="#95A5A6"/>
-        </Style>
-
-        <!-- Estilo para texto de mantenimientos -->
-        <Style x:Key="MaintenanceTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="FontWeight" Value="Medium"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="Foreground" Value="#546E7A"/>
-        </Style>
-
-        <!-- Convertidor para determinar el estilo según si tiene mantenimientos -->
+        <!-- Estilo dinámico para tarjetas de mes -->
         <Style x:Key="DynamicMonthCardStyle" TargetType="Border">
             <Setter Property="Background" Value="White"/>
             <Setter Property="BorderBrush" Value="#D0D0D0"/>
@@ -88,7 +23,7 @@
             <Setter Property="CornerRadius" Value="4"/>
             <Setter Property="Margin" Value="12"/>
             <Setter Property="Padding" Value="20"/>
-            <Setter Property="MinHeight" Value="120"/>
+            <Setter Property="MinHeight" Value="160"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Effect">
                 <Setter.Value>
@@ -101,17 +36,17 @@
             </Setter>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding TieneMantenimientos}" Value="True">
-                    <Setter Property="Background" Value="#F5F8FA"/>
-                    <Setter Property="BorderBrush" Value="#607D8B"/>
-                    <Setter Property="BorderThickness" Value="1.5"/>
+                    <Setter Property="Background" Value="#E3F2FD"/>
+                    <Setter Property="BorderBrush" Value="#2196F3"/>
+                    <Setter Property="BorderThickness" Value="2"/>
                 </DataTrigger>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Effect">
                         <Setter.Value>
                             <DropShadowEffect Color="Black" 
-                                            Opacity="0.12" 
-                                            BlurRadius="12" 
-                                            ShadowDepth="3"
+                                            Opacity="0.15" 
+                                            BlurRadius="14" 
+                                            ShadowDepth="4"
                                             Direction="270"/>
                         </Setter.Value>
                     </Setter>
@@ -119,18 +54,68 @@
             </Style.Triggers>
         </Style>
 
-        <!-- Estilo dinámico para el texto de mantenimientos -->
-        <Style x:Key="DynamicMaintenanceTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="11"/>
+        <!-- Estilo para nombre del mes -->
+        <Style x:Key="MonthTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="#2C3E50"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+        </Style>
+
+        <!-- Estilo para texto cuando no hay mantenimientos -->
+        <Style x:Key="SinMantenimientosTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="#95A5A6"/>
+            <Setter Property="FontStyle" Value="Italic"/>
+            <Setter Property="Visibility" Value="Collapsed"/>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding TieneMantenimientos}" Value="False">
-                    <Setter Property="Foreground" Value="#95A5A6"/>
+                    <Setter Property="Visibility" Value="Visible"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding TieneMantenimientos}" Value="True">
-                    <Setter Property="Foreground" Value="#546E7A"/>
-                    <Setter Property="FontWeight" Value="Medium"/>
-                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Estilo para detalle de locales -->
+        <Style x:Key="LocalDetalleTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="#1976D2"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Margin" Value="8,3,8,3"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+
+        <!-- Estilo para el botón de ayuda -->
+        <Style x:Key="HelpButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="36"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                               CornerRadius="18"
+                               BorderThickness="0">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1976D2"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#1565C0"/>
+                </Trigger>
             </Style.Triggers>
         </Style>
     </Window.Resources>
@@ -142,69 +127,111 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Header: Selector de año -->
+        <!-- Header: Selector de año y checkbox -->
         <Border Grid.Row="0" 
                 Background="White" 
                 BorderBrush="#E0E0E0"
                 BorderThickness="0,0,0,1"
                 Padding="24">
-            <StackPanel>
-                <TextBlock Text="Calendario Anual" 
-                          FontSize="22" 
-                          FontWeight="SemiBold" 
-                          Foreground="#2C3E50"
-                          HorizontalAlignment="Center"
-                          Margin="0,0,0,16"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <StackPanel Orientation="Horizontal" 
-                           HorizontalAlignment="Center">
-                    <TextBlock Text="Año:" 
-                              FontSize="14" 
-                              FontWeight="Medium" 
-                              Foreground="#546E7A" 
-                              VerticalAlignment="Center" 
-                              Margin="0,0,12,0"/>
+                <!-- Fila superior: Checkbox izquierda y botón ayuda derecha -->
+                <Grid Grid.Row="0" Margin="0,0,0,16">
+                    <!-- Checkbox en la esquina superior izquierda -->
+                    <CheckBox IsChecked="{Binding IniciarConWindows}"
+                             HorizontalAlignment="Left"
+                             VerticalAlignment="Center">
+                        <TextBlock Text="Iniciar con Windows"
+                                  FontSize="11"
+                                  Foreground="#546E7A"/>
+                    </CheckBox>
 
-                    <Button x:Name="AnteriorAnio"
-                           Content="◀" 
-                           Width="36" 
-                           Height="36" 
-                           FontSize="12"
-                           Background="White" 
-                           Foreground="#546E7A"
-                           BorderBrush="#D0D0D0" 
-                           BorderThickness="1"
-                           Cursor="Hand"
-                           Margin="0,0,8,0"
-                           Click="AnteriorAnio_Click"/>
+                    <!-- Botón de ayuda en la esquina superior derecha -->
+                    <Button x:Name="AyudaButton"
+                           Content="?"
+                           Style="{StaticResource HelpButtonStyle}"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           ToolTip="Ver instrucciones"
+                           Click="AyudaButton_Click"/>
+                </Grid>
 
-                    <TextBox x:Name="AnioTextBox"
-                            Text="{Binding AnioSeleccionado, UpdateSourceTrigger=PropertyChanged}" 
-                            Width="90" 
-                            Height="36" 
-                            FontSize="16" 
-                            FontWeight="Medium" 
-                            TextAlignment="Center" 
-                            VerticalContentAlignment="Center"
-                            Foreground="#2C3E50"
-                            BorderBrush="#D0D0D0"
-                            BorderThickness="1"
-                            Margin="0,0,8,0"
-                            LostFocus="AnioTextBox_LostFocus"/>
+                <!-- Título y selector de año -->
+                <StackPanel Grid.Row="1">
+                    <StackPanel Orientation="Horizontal"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,8">
+                        <TextBlock Text="📅" 
+                                  FontSize="28" 
+                                  VerticalAlignment="Center"
+                                  Margin="0,0,12,0"/>
+                        <TextBlock Text="Calendario de Mantenimiento" 
+                                  FontSize="26" 
+                                  FontWeight="Bold" 
+                                  Foreground="#2C3E50"
+                                  VerticalAlignment="Center"/>
+                    </StackPanel>
 
-                    <Button x:Name="SiguienteAnio"
-                           Content="▶" 
-                           Width="36" 
-                           Height="36" 
-                           FontSize="12"
-                           Background="White" 
-                           Foreground="#546E7A"
-                           BorderBrush="#D0D0D0" 
-                           BorderThickness="1"
-                           Cursor="Hand"
-                           Click="SiguienteAnio_Click"/>
+                    <TextBlock Text="Gestione y visualice todos los mantenimientos programados" 
+                              FontSize="12" 
+                              Foreground="#95A5A6"
+                              HorizontalAlignment="Center"
+                              Margin="0,0,0,16"/>
+
+                    <StackPanel Orientation="Horizontal" 
+                               HorizontalAlignment="Center">
+                        <TextBlock Text="Año:" 
+                                  FontSize="14" 
+                                  FontWeight="Medium" 
+                                  Foreground="#546E7A" 
+                                  VerticalAlignment="Center" 
+                                  Margin="0,0,12,0"/>
+
+                        <Button x:Name="AnteriorAnio"
+                               Content="◀" 
+                               Width="36" 
+                               Height="36" 
+                               FontSize="12"
+                               Background="White" 
+                               Foreground="#546E7A"
+                               BorderBrush="#D0D0D0" 
+                               BorderThickness="1"
+                               Cursor="Hand"
+                               Margin="0,0,8,0"
+                               Click="AnteriorAnio_Click"/>
+
+                        <TextBox x:Name="AnioTextBox"
+                                Text="{Binding AnioSeleccionado, UpdateSourceTrigger=PropertyChanged}" 
+                                Width="90" 
+                                Height="36" 
+                                FontSize="16" 
+                                FontWeight="Medium" 
+                                TextAlignment="Center" 
+                                VerticalContentAlignment="Center"
+                                Foreground="#2C3E50"
+                                BorderBrush="#D0D0D0"
+                                BorderThickness="1"
+                                Margin="0,0,8,0"
+                                LostFocus="AnioTextBox_LostFocus"/>
+
+                        <Button x:Name="SiguienteAnio"
+                               Content="▶" 
+                               Width="36" 
+                               Height="36" 
+                               FontSize="12"
+                               Background="White" 
+                               Foreground="#546E7A"
+                               BorderBrush="#D0D0D0" 
+                               BorderThickness="1"
+                               Cursor="Hand"
+                               Click="SiguienteAnio_Click"/>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
+            </Grid>
         </Border>
 
         <!-- Área principal: Calendario con tarjetas de meses -->
@@ -225,8 +252,32 @@
                             <StackPanel>
                                 <TextBlock Text="{Binding NombreMes}" 
                                           Style="{StaticResource MonthTextStyle}"/>
-                                <TextBlock Text="{Binding TextoMantenimientos}" 
-                                          Style="{StaticResource DynamicMaintenanceTextStyle}"/>
+
+                                <!-- Lista de locales con mantenimientos en un ScrollViewer -->
+                                <ScrollViewer MaxHeight="80"
+                                            VerticalScrollBarVisibility="Auto"
+                                            HorizontalScrollBarVisibility="Disabled"
+                                            Margin="0,0,0,0">
+                                    <ItemsControl ItemsSource="{Binding DetalleLocales}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="#BBDEFB"
+                                                       BorderBrush="#2196F3"
+                                                       BorderThickness="1"
+                                                       CornerRadius="3"
+                                                       Padding="8,4"
+                                                       Margin="4,2">
+                                                    <TextBlock Text="{Binding TextoDetalle}" 
+                                                              Style="{StaticResource LocalDetalleTextStyle}"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+
+                                <!-- Mensaje cuando no hay mantenimientos -->
+                                <TextBlock Text="Sin mantenimientos programados"
+                                          Style="{StaticResource SinMantenimientosTextStyle}"/>
                             </StackPanel>
                         </Border>
                     </DataTemplate>
@@ -240,7 +291,8 @@
                 BorderBrush="#E0E0E0"
                 BorderThickness="0,1,0,0"
                 Padding="24">
-            <Button x:Name="AbrirLocalesWindow" Content="Gestionar Locales y Mantenimientos" 
+            <Button x:Name="AbrirLocalesWindow" 
+                   Content="Gestionar Locales y Mantenimientos" 
                    Height="44" 
                    MinWidth="280"
                    FontSize="14" 

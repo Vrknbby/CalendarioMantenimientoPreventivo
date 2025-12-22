@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -88,6 +89,20 @@ namespace CalendarioMantenimientoPreventivo.Models.ViewModels
             {
                 _esDestinoDrop = value;
                 NotifyPropertyChanged(nameof(EsDestinoDrop));
+            }
+        }
+
+        private ObservableCollection<Mantenimiento> _mantenimientos = new();
+        public ObservableCollection<Mantenimiento> Mantenimientos
+        {
+            get => _mantenimientos;
+            set
+            {
+                if (_mantenimientos != value)
+                {
+                    _mantenimientos = value;
+                    NotifyPropertyChanged(nameof(Mantenimientos));
+                }
             }
         }
 
