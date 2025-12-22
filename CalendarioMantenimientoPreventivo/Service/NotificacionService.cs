@@ -1,6 +1,7 @@
 ﻿using CalendarioMantenimientoPreventivo.Data;
 using CalendarioMantenimientoPreventivo.Models;
 using CalendarioMantenimientoPreventivo.Models.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,19 +19,13 @@ namespace CalendarioMantenimientoPreventivo.Service
             _context = context;
         }
 
-        public List<string> ObtenerNotificacionesDelDia()
+        public List<NotificacionInfo> ObtenerNotificacionesDelDia()
         {
-            var mensajes = new List<string>();
-
-            var parametro = _context.ParametrosSistema
-                .FirstOrDefault(p => p.Clave == "NotificacionesActivas");
-
-            if (parametro != null && parametro.Valor == "false")
-                return mensajes;
-
+            var notificaciones = new List<NotificacionInfo>();
             var hoy = DateTime.Today;
 
             var mantenimientos = _context.Mantenimientos
+                .Include(m => m.Local)
                 .Where(m =>
                         m.Anio > hoy.Year ||
                         (m.Anio == hoy.Year && m.Mes > hoy.Month) ||
@@ -47,9 +42,17 @@ namespace CalendarioMantenimientoPreventivo.Service
                 {
                     if (!NotificacionYaMostrada(m.Id, TiposNotificacion.SemanaAntes))
                     {
-                        mensajes.Add(
-                            $"⚠ Mantenimiento programado para el {fechaMantenimiento:dd/MM/yyyy} " +
-                            $"(faltan {diasFaltantes} días)");
+                        notificaciones.Add(new NotificacionInfo
+                        {
+                            MantenimientoId = m.Id,
+                            NombreLocal = m.Local.Nombre,
+                            NombreMantenimiento = m.Nombre,
+                            Descripcion = m.Descripcion,
+                            FechaMantenimiento = fechaMantenimiento,
+                            DiasRestantes = diasFaltantes,
+                            EsUrgente = false,
+                            TipoNotificacion = "Próximamente"
+                        });
 
                         RegistrarNotificacion(m.Id, TiposNotificacion.SemanaAntes);
                     }
@@ -59,8 +62,17 @@ namespace CalendarioMantenimientoPreventivo.Service
                 {
                     if (!NotificacionYaMostrada(m.Id, TiposNotificacion.DiaExacto))
                     {
-                        mensajes.Add(
-                            $"🚨 HOY corresponde el mantenimiento del local {m.LocalId}");
+                        notificaciones.Add(new NotificacionInfo
+                        {
+                            MantenimientoId = m.Id,
+                            NombreLocal = m.Local.Nombre,
+                            NombreMantenimiento = m.Nombre,
+                            Descripcion = m.Descripcion,
+                            FechaMantenimiento = fechaMantenimiento,
+                            DiasRestantes = 0,
+                            EsUrgente = true,
+                            TipoNotificacion = "¡HOY!"
+                        });
 
                         RegistrarNotificacion(m.Id, TiposNotificacion.DiaExacto);
                     }
@@ -68,7 +80,11 @@ namespace CalendarioMantenimientoPreventivo.Service
             }
 
             _context.SaveChanges();
-            return mensajes;
+            var notificacionesOrdenadas = notificaciones
+                .OrderByDescending(n => n.EsUrgente)           
+                .ThenBy(n => n.FechaMantenimiento)      
+                .ToList();
+            return notificaciones;
         }
 
         private bool NotificacionYaMostrada(int mantenimientoId, string tipo)

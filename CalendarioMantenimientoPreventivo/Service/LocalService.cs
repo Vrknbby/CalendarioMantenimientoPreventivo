@@ -92,10 +92,29 @@ namespace CalendarioMantenimientoPreventivo.Service
         public int ObtenerTotalLocalesFiltrados(string textoBusqueda)
         {
             if (string.IsNullOrWhiteSpace(textoBusqueda))
-                return ObtenerTotalLocales();
+                return _context.Locales.Count();
+
+            string busquedaPattern = $"%{textoBusqueda.Trim()}%";
 
             return _context.Locales
-                .Count(l => l.Nombre.Contains(textoBusqueda));
+                .Count(l => EF.Functions.Like(l.Nombre, busquedaPattern));
+        }
+
+        public List<Local> ObtenerLocalesPaginados(int registrosSaltados, int cantidadRegistros, string textoBusqueda)
+        {
+            IQueryable<Local> query = _context.Locales
+                .Include(l => l.Mantenimientos);
+            if (!string.IsNullOrWhiteSpace(textoBusqueda))
+            {
+                string busquedaPattern = $"%{textoBusqueda.Trim()}%";
+                query = query.Where(l => EF.Functions.Like(l.Nombre, busquedaPattern));
+            }
+
+            query = query.OrderByDescending(l => l.FechaRegistro);
+            return query
+                .Skip(registrosSaltados)
+                .Take(cantidadRegistros)
+                .ToList();
         }
     }
 }

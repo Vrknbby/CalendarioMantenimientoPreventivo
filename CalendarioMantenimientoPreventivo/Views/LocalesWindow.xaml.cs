@@ -29,6 +29,7 @@ namespace CalendarioMantenimientoPreventivo.Views
         private readonly AppDbContext _context;
 
         private const int REGISTROS_POR_PAGINA = 10;
+        private const int REGISTROS_POR_CARGA = 30;
 
         private int _paginaActual = 1;
         public int PaginaActual
@@ -104,6 +105,8 @@ namespace CalendarioMantenimientoPreventivo.Views
         public string TextoContador => $"Total: {TotalRegistros} {(TotalRegistros == 1 ? "local" : "locales")} {(HayFiltroBusqueda ? "encontrados" : "registrados")}";
 
         public ObservableCollection<Local> LocalesPaginados { get; set; }
+        private List<Local> _localesCargados = new List<Local>();
+        private int _registrosCargadosHasta = 0;
 
         public LocalesWindow(LocalService localService, AppDbContext context)
         {
@@ -125,18 +128,51 @@ namespace CalendarioMantenimientoPreventivo.Views
             TotalPaginas = (int)Math.Ceiling((double)TotalRegistros / REGISTROS_POR_PAGINA);
 
             if (TotalPaginas == 0) TotalPaginas = 1;
+
+            _localesCargados.Clear();
+            _registrosCargadosHasta = 0;
         }
 
         private void CargarPagina()
         {
             LocalesPaginados.Clear();
 
-            var locales = _localService.BuscarLocales(TextoBusqueda)
-                .Skip((PaginaActual - 1) * REGISTROS_POR_PAGINA)
+            int registroInicial = (PaginaActual - 1) * REGISTROS_POR_PAGINA;
+            int registroFinal = registroInicial + REGISTROS_POR_PAGINA;
+            if (HayFiltroBusqueda)
+            {
+                var locales = _localService.ObtenerLocalesPaginados(
+                    registroInicial,
+                    REGISTROS_POR_PAGINA,
+                    TextoBusqueda);
+
+                foreach (var local in locales)
+                {
+                    LocalesPaginados.Add(local);
+                }
+                return;
+            }
+
+            if (registroFinal > _registrosCargadosHasta)
+            {
+                int registrosNecesarios = registroFinal - _registrosCargadosHasta;
+                int registrosACargar = Math.Max(REGISTROS_POR_CARGA, registrosNecesarios);
+
+                var nuevosLocales = _localService.ObtenerLocalesPaginados(
+                    _registrosCargadosHasta,
+                    registrosACargar,
+                    string.Empty);
+
+                _localesCargados.AddRange(nuevosLocales);
+                _registrosCargadosHasta += nuevosLocales.Count;
+            }
+
+            var localesPagina = _localesCargados
+                .Skip(registroInicial)
                 .Take(REGISTROS_POR_PAGINA)
                 .ToList();
 
-            foreach (var local in locales)
+            foreach (var local in localesPagina)
             {
                 LocalesPaginados.Add(local);
             }
@@ -185,6 +221,8 @@ namespace CalendarioMantenimientoPreventivo.Views
             if (dialog.ShowDialog() == true && dialog.FueGuardado)
             {
                 _localService.ActualizarLocal(localSeleccionado, dialog.NombreLocal);
+                _localesCargados.Clear();
+                _registrosCargadosHasta = 0;
                 CargarPagina();
             }
         }

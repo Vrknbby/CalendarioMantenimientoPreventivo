@@ -1,0 +1,260 @@
+﻿<Window x:Class="CalendarioMantenimientoPreventivo.Views.NotificacionesView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Recordatorios de Mantenimiento" 
+        Height="920" 
+        Width="900"
+        MinHeight="500"
+        MinWidth="650"
+        WindowStartupLocation="CenterScreen"
+        Background="#FAFAFA"
+        ResizeMode="CanResize"
+        Topmost="True">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+
+        <!-- Estilo para tarjetas de notificación -->
+        <Style x:Key="NotificacionCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="24"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" 
+                                    Opacity="0.1" 
+                                    BlurRadius="12" 
+                                    ShadowDepth="3"
+                                    Direction="270"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Estilo para notificaciones urgentes -->
+        <Style x:Key="NotificacionUrgenteCardStyle" TargetType="Border" BasedOn="{StaticResource NotificacionCardStyle}">
+            <Setter Property="Background" Value="#FFEBEE"/>
+            <Setter Property="BorderBrush" Value="#E53935"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+
+        <!-- Estilo para botón cerrar -->
+        <Style x:Key="CerrarButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="MinWidth" Value="180"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                               CornerRadius="6"
+                               Padding="24,0">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1976D2"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#1565C0"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" 
+                Background="#2196F3" 
+                Padding="32,24">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,8">
+                    <TextBlock Text="🔔" 
+                              FontSize="36" 
+                              VerticalAlignment="Center"
+                              Margin="0,0,16,0"/>
+                    <TextBlock Text="Recordatorios de Mantenimiento" 
+                              FontSize="26" 
+                              FontWeight="Bold" 
+                              Foreground="White"
+                              VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock Text="Tienes mantenimientos programados que requieren tu atención" 
+                          FontSize="13" 
+                          Foreground="#E3F2FD"
+                          HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Contenido: Lista de notificaciones -->
+        <ScrollViewer Grid.Row="1" 
+                     VerticalScrollBarVisibility="Auto"
+                     Padding="32,24">
+            <ItemsControl ItemsSource="{Binding Notificaciones}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <!-- Tarjeta dinámica según si es urgente o no -->
+                        <Border>
+                            <Border.Style>
+                                <Style TargetType="Border" BasedOn="{StaticResource NotificacionCardStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding EsUrgente}" Value="True">
+                                            <Setter Property="Background" Value="#FFEBEE"/>
+                                            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+                                            <Setter Property="BorderThickness" Value="2"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Badge de tipo de notificación -->
+                                <Border Grid.Row="0"
+                                       HorizontalAlignment="Left"
+                                       CornerRadius="4"
+                                       Padding="12,6"
+                                       Margin="0,0,0,16">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="#FFC107"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding EsUrgente}" Value="True">
+                                                    <Setter Property="Background" Value="#E53935"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock FontSize="12"
+                                              FontWeight="Bold"
+                                              Foreground="White">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="⚠️ PRÓXIMAMENTE"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding EsUrgente}" Value="True">
+                                                        <Setter Property="Text" Value="🚨 ¡URGENTE - HOY!"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Border>
+
+                                <!-- Local -->
+                                <StackPanel Grid.Row="1" Margin="0,0,0,12">
+                                    <TextBlock Text="📍 Local"
+                                              FontSize="11"
+                                              Foreground="#95A5A6"
+                                              FontWeight="Medium"
+                                              Margin="0,0,0,4"/>
+                                    <TextBlock Text="{Binding NombreLocal}"
+                                              FontSize="18"
+                                              FontWeight="Bold"
+                                              Foreground="#2C3E50"/>
+                                </StackPanel>
+
+                                <!-- Nombre del Mantenimiento -->
+                                <StackPanel Grid.Row="2" Margin="0,0,0,12">
+                                    <TextBlock Text="🔧 Mantenimiento"
+                                              FontSize="11"
+                                              Foreground="#95A5A6"
+                                              FontWeight="Medium"
+                                              Margin="0,0,0,4"/>
+                                    <TextBlock Text="{Binding NombreMantenimiento}"
+                                              FontSize="16"
+                                              FontWeight="SemiBold"
+                                              Foreground="#2C3E50"
+                                              TextWrapping="Wrap"/>
+                                </StackPanel>
+
+                                <!-- Fecha y días restantes -->
+                                <Grid Grid.Row="3" Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="📅 Fecha programada"
+                                                  FontSize="11"
+                                                  Foreground="#95A5A6"
+                                                  FontWeight="Medium"
+                                                  Margin="0,0,0,4"/>
+                                        <TextBlock Text="{Binding FechaMantenimiento, StringFormat='{}{0:dddd, dd/MM/yyyy}'}"
+                                                  FontSize="14"
+                                                  FontWeight="SemiBold"
+                                                  Foreground="#2196F3"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Descripción -->
+                                <StackPanel Grid.Row="4">
+                                    <TextBlock Text="📝 Descripción"
+                                              FontSize="11"
+                                              Foreground="#95A5A6"
+                                              FontWeight="Medium"
+                                              Margin="0,0,0,4"/>
+                                    <Border Background="#F8F9FA"
+                                           BorderBrush="#E0E0E0"
+                                           BorderThickness="1"
+                                           CornerRadius="4"
+                                           Padding="12">
+                                        <TextBlock Text="{Binding Descripcion}"
+                                                  FontSize="13"
+                                                  Foreground="#546E7A"
+                                                  TextWrapping="Wrap"
+                                                  LineHeight="20"/>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Footer con botón -->
+        <Border Grid.Row="2" 
+                Background="White" 
+                BorderBrush="#E0E0E0"
+                BorderThickness="0,1,0,0"
+                Padding="32,20">
+            <Button x:Name="CerrarButton"
+                   Content="Entendido"
+                   Style="{StaticResource CerrarButtonStyle}"
+                   HorizontalAlignment="Center"
+                   Click="CerrarButton_Click"/>
+        </Border>
+
+    </Grid>
+</Window>

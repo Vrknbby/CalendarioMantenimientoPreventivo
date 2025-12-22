@@ -64,6 +64,8 @@ namespace CalendarioMantenimientoPreventivo.Service
             int mesAnterior = mantenimiento.Mes;
             int anioAnterior = mantenimiento.Anio;
 
+            bool fechaCambio = mantenimiento.Anio != anio || mantenimiento.Mes != mes;
+
             mantenimiento.Nombre = nombre;
             mantenimiento.Descripcion = descripcion;
             mantenimiento.Mes = mes;
@@ -73,6 +75,11 @@ namespace CalendarioMantenimientoPreventivo.Service
             _context.SaveChanges();
             RecalcularDias(_localId, anioAnterior, mesAnterior);
             RecalcularDias(_localId, anio, mes);
+
+            if (fechaCambio)
+            {
+                LimpiarNotificacionesDeMantenimiento(mantenimiento.Id);
+            }
         }
 
         public void Eliminar(Mantenimiento mantenimiento)
@@ -174,6 +181,7 @@ namespace CalendarioMantenimientoPreventivo.Service
             {
                 mantenimientoOrigen.Dia = diaDestino;
                 _context.SaveChanges();
+                LimpiarNotificacionesDeMantenimiento(mantenimientoOrigen.Id);
                 return;
             }
 
@@ -182,6 +190,21 @@ namespace CalendarioMantenimientoPreventivo.Service
             mantenimientoOrigen.Dia = diaTemporal; 
 
             _context.SaveChanges();
+            LimpiarNotificacionesDeMantenimiento(mantenimientoOrigen.Id);
+            LimpiarNotificacionesDeMantenimiento(mantenimientoDestino.Id);
+        }
+
+        private void LimpiarNotificacionesDeMantenimiento(int mantenimientoId)
+        {
+            var notificaciones = _context.MantenimientoNotificaciones
+                .Where(n => n.MantenimientoId == mantenimientoId)
+                .ToList();
+
+            if (notificaciones.Any())
+            {
+                _context.MantenimientoNotificaciones.RemoveRange(notificaciones);
+                _context.SaveChanges();
+            }
         }
     }
 }

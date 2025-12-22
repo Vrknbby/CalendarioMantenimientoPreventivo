@@ -31,25 +31,27 @@ namespace CalendarioMantenimientoPreventivo
             ParametroSistemaService = new ParametroSistemaService(DbContext);
 
             var notificacionService = new NotificacionService(DbContext);
-            var mensajes = notificacionService.ObtenerNotificacionesDelDia();
-
-            foreach (var mensaje in mensajes)
-            {
-                MessageBox.Show(
-                    mensaje,
-                    "Recordatorio de Mantenimiento",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
-            }
+            var notificaciones = notificacionService.ObtenerNotificacionesDelDia();
 
             if (inicioConWindows)
             {
+                if (notificaciones.Any())
+                {
+                    var notificacionesView = new NotificacionesView(notificaciones);
+                    notificacionesView.ShowDialog();
+                }
+
                 Shutdown();
                 return;
             }
-
             var mainWindow = new MainWindow(LocalService, DbContext, ParametroSistemaService);
             mainWindow.Show();
+            if (notificaciones.Any())
+            {
+                var notificacionesView = new NotificacionesView(notificaciones);
+                notificacionesView.Owner = mainWindow;
+                notificacionesView.ShowDialog();
+            }
         }
 
         protected override void OnExit(ExitEventArgs e)
