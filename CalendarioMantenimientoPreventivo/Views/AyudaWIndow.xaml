@@ -11,7 +11,8 @@
         MinWidth="750"
         WindowStartupLocation="CenterScreen"
         Background="#FAFAFA"
-        ResizeMode="CanResize">
+        ResizeMode="CanResize"
+        Icon="/Resources/app-icon.ico">
 
     <Window.Resources>
         <!-- Estilo para las tarjetas de sección -->

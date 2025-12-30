@@ -7,12 +7,14 @@
         Title="Recordatorios de Mantenimiento" 
         Height="920" 
         Width="900"
-        MinHeight="500"
+        MinHeight="650"
         MinWidth="650"
         WindowStartupLocation="CenterScreen"
         Background="#FAFAFA"
         ResizeMode="CanResize"
-        Topmost="True">
+        Topmost="True"
+        Icon="/Resources/app-icon.ico"
+        Language="es-ES">
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
@@ -34,13 +36,6 @@
                                     Direction="270"/>
                 </Setter.Value>
             </Setter>
-        </Style>
-
-        <!-- Estilo para notificaciones urgentes -->
-        <Style x:Key="NotificacionUrgenteCardStyle" TargetType="Border" BasedOn="{StaticResource NotificacionCardStyle}">
-            <Setter Property="Background" Value="#FFEBEE"/>
-            <Setter Property="BorderBrush" Value="#E53935"/>
-            <Setter Property="BorderThickness" Value="2"/>
         </Style>
 
         <!-- Estilo para botón cerrar -->
@@ -87,25 +82,62 @@
         <Border Grid.Row="0" 
                 Background="#2196F3" 
                 Padding="32,24">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,8">
-                    <TextBlock Text="🔔" 
-                              FontSize="36" 
-                              VerticalAlignment="Center"
-                              Margin="0,0,16,0"/>
-                    <TextBlock Text="Recordatorios de Mantenimiento" 
-                              FontSize="26" 
-                              FontWeight="Bold" 
-                              Foreground="White"
-                              VerticalAlignment="Center"/>
+            <Grid>
+                <!-- ✅ Información de contacto en la esquina superior derecha -->
+                <Border HorizontalAlignment="Right"
+                       VerticalAlignment="Top"
+                       Background="#1976D2"
+                       CornerRadius="6"
+                       Padding="12,8" 
+                       Margin="0,0,-15,0">
+                    <StackPanel>
+                        <TextBlock Text="📞 Contactarse con:"
+                                  FontSize="12"
+                                  Foreground="#BBDEFB"
+                                  FontWeight="SemiBold"
+                                  Margin="0,0,0,4"/>
+                        <TextBlock Text="Ing. Walter Valderrama"
+                                  FontSize="13"
+                                  Foreground="White"
+                                  FontWeight="Medium"
+                                  Margin="0,0,0,2"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📱 997 354 165"
+                                      FontSize="13"
+                                      Foreground="#E3F2FD"
+                                      Margin="0,0,8,0"/>
+                            <TextBlock Text="o"
+                                      FontSize="12"
+                                      Foreground="#90CAF9"
+                                      Margin="0,0,8,0"/>
+                            <TextBlock Text="981 050 093"
+                                      FontSize="13"
+                                      Foreground="#E3F2FD"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Título centrado -->
+                <StackPanel HorizontalAlignment="Center"
+                           VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,8" 
+                               Width="535">
+                        <TextBlock Text="🔔" 
+                                  FontSize="36"/>
+                        <TextBlock Text="Recordatorios de Mantenimiento" 
+                                  FontSize="26" 
+                                  FontWeight="Bold" 
+                                  Foreground="White"
+                                  VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock Text="Tienes mantenimientos programados que requieren tu atención" 
+                              FontSize="13" 
+                              Foreground="#E3F2FD" 
+                              Width="415"/>
                 </StackPanel>
-                <TextBlock Text="Tienes mantenimientos programados que requieren tu atención" 
-                          FontSize="13" 
-                          Foreground="#E3F2FD"
-                          HorizontalAlignment="Center"/>
-            </StackPanel>
+            </Grid>
         </Border>
 
         <!-- Contenido: Lista de notificaciones -->
@@ -122,7 +154,7 @@
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding EsUrgente}" Value="True">
                                             <Setter Property="Background" Value="#FFEBEE"/>
-                                            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+                                            <Setter Property="BorderBrush" Value="#E53935"/>
                                             <Setter Property="BorderThickness" Value="2"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -173,7 +205,7 @@
                                 <!-- Local -->
                                 <StackPanel Grid.Row="1" Margin="0,0,0,12">
                                     <TextBlock Text="📍 Local"
-                                              FontSize="11"
+                                              FontSize="13"
                                               Foreground="#95A5A6"
                                               FontWeight="Medium"
                                               Margin="0,0,0,4"/>
@@ -186,7 +218,7 @@
                                 <!-- Nombre del Mantenimiento -->
                                 <StackPanel Grid.Row="2" Margin="0,0,0,12">
                                     <TextBlock Text="🔧 Mantenimiento"
-                                              FontSize="11"
+                                              FontSize="13"
                                               Foreground="#95A5A6"
                                               FontWeight="Medium"
                                               Margin="0,0,0,4"/>
@@ -206,21 +238,62 @@
 
                                     <StackPanel Grid.Column="0">
                                         <TextBlock Text="📅 Fecha programada"
-                                                  FontSize="11"
+                                                  FontSize="13"
                                                   Foreground="#95A5A6"
                                                   FontWeight="Medium"
                                                   Margin="0,0,0,4"/>
-                                        <TextBlock Text="{Binding FechaMantenimiento, StringFormat='{}{0:dddd, dd/MM/yyyy}'}"
+                                        <TextBlock Text="{Binding FechaMantenimiento, StringFormat='{}{0:dddd, dd/MM/yyyy}', ConverterCulture=es-ES}"
                                                   FontSize="14"
                                                   FontWeight="SemiBold"
                                                   Foreground="#2196F3"/>
                                     </StackPanel>
+
+                                    <!-- Contador de días (solo si no es urgente) -->
+                                    <Border Grid.Column="1"
+                                           Background="#E3F2FD"
+                                           BorderBrush="#2196F3"
+                                           BorderThickness="2"
+                                           CornerRadius="8"
+                                           Padding="16,12"
+                                           VerticalAlignment="Center">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding EsUrgente}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding DiasRestantes}"
+                                                      FontSize="24"
+                                                      FontWeight="Bold"
+                                                      Foreground="#1976D2"
+                                                      HorizontalAlignment="Center"/>
+                                            <TextBlock FontSize="10"
+                                                      Foreground="#546E7A"
+                                                      HorizontalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="días"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding DiasRestantes}" Value="1">
+                                                                <Setter Property="Text" Value="día"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Border>
                                 </Grid>
 
                                 <!-- Descripción -->
                                 <StackPanel Grid.Row="4">
                                     <TextBlock Text="📝 Descripción"
-                                              FontSize="11"
+                                              FontSize="13"
                                               Foreground="#95A5A6"
                                               FontWeight="Medium"
                                               Margin="0,0,0,4"/>

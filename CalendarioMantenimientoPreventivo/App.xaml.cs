@@ -22,35 +22,50 @@ namespace CalendarioMantenimientoPreventivo
         {
             base.OnStartup(e);
 
-            bool inicioConWindows = e.Args.Contains("--startup");
-
-            DbContext = new AppDbContext();
-            DbContext.Database.Migrate();
-
-            LocalService = new LocalService(DbContext);
-            ParametroSistemaService = new ParametroSistemaService(DbContext);
-
-            var notificacionService = new NotificacionService(DbContext);
-            var notificaciones = notificacionService.ObtenerNotificacionesDelDia();
-
-            if (inicioConWindows)
+            try
             {
+                SQLitePCL.Batteries_V2.Init();
+
+                bool inicioConWindows = e.Args.Contains("--startup");
+
+                DbContext = new AppDbContext();
+                DbContext.Database.Migrate();
+
+                LocalService = new LocalService(DbContext);
+                ParametroSistemaService = new ParametroSistemaService(DbContext);
+
+                var seedService = new SeedService(DbContext, LocalService);
+                seedService.SeedInitialData();
+
+                var notificacionService = new NotificacionService(DbContext);
+                var notificaciones = notificacionService.ObtenerNotificacionesDelDia();
+
+                if (inicioConWindows)
+                {
+                    if (notificaciones.Any())
+                    {
+                        var notificacionesView = new NotificacionesView(notificaciones);
+                        notificacionesView.ShowDialog();
+                    }
+
+                    Shutdown();
+                    return;
+                }
+
+                var mainWindow = new MainWindow(LocalService, DbContext, ParametroSistemaService);
+                mainWindow.Show();
+
                 if (notificaciones.Any())
                 {
                     var notificacionesView = new NotificacionesView(notificaciones);
+                    notificacionesView.Owner = mainWindow;
                     notificacionesView.ShowDialog();
                 }
-
-                Shutdown();
-                return;
             }
-            var mainWindow = new MainWindow(LocalService, DbContext, ParametroSistemaService);
-            mainWindow.Show();
-            if (notificaciones.Any())
+            catch (Exception ex)
             {
-                var notificacionesView = new NotificacionesView(notificaciones);
-                notificacionesView.Owner = mainWindow;
-                notificacionesView.ShowDialog();
+                MessageBox.Show("Error al iniciar la aplicación: " + ex.Message);
+                Shutdown();
             }
         }
 

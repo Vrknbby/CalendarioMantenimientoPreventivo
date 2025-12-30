@@ -6,8 +6,15 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+	  
+	<ApplicationIcon>Resources\app-icon.ico</ApplicationIcon>
   </PropertyGroup>
 
+  <ItemGroup>
+	<Resource Include="Resources\app-icon.ico" />
+	<Resource Include="Resources\app-icon.png" />
+  </ItemGroup>
+	
   <ItemGroup>
     <Folder Include="Helpers\" />
   </ItemGroup>

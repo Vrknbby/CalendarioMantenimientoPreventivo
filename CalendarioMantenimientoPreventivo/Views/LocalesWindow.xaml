@@ -10,7 +10,9 @@
         MinHeight="600"
         MinWidth="850"
         WindowStartupLocation="CenterScreen"
-        Background="#FAFAFA">
+        WindowState="Maximized"
+        Background="#FAFAFA"
+        Icon="/Resources/app-icon.ico">
 
     <Window.Resources>
         <!-- Convertidor de visibilidad inversa -->

@@ -5,12 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Calendario de Mantenimiento Preventivo" 
-        Height="1021" 
-        Width="1258"
+        Height="900" 
+        Width="1200"
         MinHeight="600"
         MinWidth="900"
         WindowStartupLocation="CenterScreen"
-        Background="#FAFAFA">
+        WindowState="Maximized"
+        Background="#FAFAFA"
+        Icon="/Resources/app-icon.ico">
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
@@ -160,77 +162,90 @@
                            Click="AyudaButton_Click"/>
                 </Grid>
 
-                <!-- Título y selector de año -->
-                <StackPanel Grid.Row="1">
-                    <StackPanel Orientation="Horizontal"
-                               HorizontalAlignment="Center"
-                               Margin="0,0,0,8">
-                        <TextBlock Text="📅" 
-                                  FontSize="28" 
-                                  VerticalAlignment="Center"
-                                  Margin="0,0,12,0"/>
-                        <TextBlock Text="Calendario de Mantenimiento" 
-                                  FontSize="26" 
-                                  FontWeight="Bold" 
-                                  Foreground="#2C3E50"
-                                  VerticalAlignment="Center"/>
+                <!-- Título y selector de año con logo -->
+                <Grid Grid.Row="1">
+                    <!-- ✅ Logo PNG a la izquierda -->
+                    <Image Source="/Resources/app-icon.png"
+                           Width="64"
+                           Height="64"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           Margin="24,0,0,0"
+                           RenderOptions.BitmapScalingMode="HighQuality"/>
+
+                    <!-- Título y selector centrados -->
+                    <StackPanel HorizontalAlignment="Center"
+                               VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,8">
+                            <TextBlock Text="📅" 
+                                      FontSize="28" 
+                                      VerticalAlignment="Center"
+                                      Margin="0,0,12,0"/>
+                            <TextBlock Text="Calendario de Mantenimiento" 
+                                      FontSize="26" 
+                                      FontWeight="Bold" 
+                                      Foreground="#2C3E50"
+                                      VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <TextBlock Text="Gestione y visualice todos los mantenimientos programados" 
+                                  FontSize="12" 
+                                  Foreground="#95A5A6"
+                                  HorizontalAlignment="Center"
+                                  Margin="0,0,0,16"/>
+
+                        <StackPanel Orientation="Horizontal" 
+                                   HorizontalAlignment="Center">
+                            <TextBlock Text="Año:" 
+                                      FontSize="14" 
+                                      FontWeight="Medium" 
+                                      Foreground="#546E7A" 
+                                      VerticalAlignment="Center" 
+                                      Margin="0,0,12,0"/>
+
+                            <Button x:Name="AnteriorAnio"
+                                   Content="◀" 
+                                   Width="36" 
+                                   Height="36" 
+                                   FontSize="12"
+                                   Background="White" 
+                                   Foreground="#546E7A"
+                                   BorderBrush="#D0D0D0" 
+                                   BorderThickness="1"
+                                   Cursor="Hand"
+                                   Margin="0,0,8,0"
+                                   Click="AnteriorAnio_Click"/>
+
+                            <TextBox x:Name="AnioTextBox"
+                                    Text="{Binding AnioSeleccionado, UpdateSourceTrigger=PropertyChanged}" 
+                                    Width="90" 
+                                    Height="36" 
+                                    FontSize="16" 
+                                    FontWeight="Medium" 
+                                    TextAlignment="Center" 
+                                    VerticalContentAlignment="Center"
+                                    Foreground="#2C3E50"
+                                    BorderBrush="#D0D0D0"
+                                    BorderThickness="1"
+                                    Margin="0,0,8,0"
+                                    LostFocus="AnioTextBox_LostFocus"/>
+
+                            <Button x:Name="SiguienteAnio"
+                                   Content="▶" 
+                                   Width="36" 
+                                   Height="36" 
+                                   FontSize="12"
+                                   Background="White" 
+                                   Foreground="#546E7A"
+                                   BorderBrush="#D0D0D0" 
+                                   BorderThickness="1"
+                                   Cursor="Hand"
+                                   Click="SiguienteAnio_Click"/>
+                        </StackPanel>
                     </StackPanel>
-
-                    <TextBlock Text="Gestione y visualice todos los mantenimientos programados" 
-                              FontSize="12" 
-                              Foreground="#95A5A6"
-                              HorizontalAlignment="Center"
-                              Margin="0,0,0,16"/>
-
-                    <StackPanel Orientation="Horizontal" 
-                               HorizontalAlignment="Center">
-                        <TextBlock Text="Año:" 
-                                  FontSize="14" 
-                                  FontWeight="Medium" 
-                                  Foreground="#546E7A" 
-                                  VerticalAlignment="Center" 
-                                  Margin="0,0,12,0"/>
-
-                        <Button x:Name="AnteriorAnio"
-                               Content="◀" 
-                               Width="36" 
-                               Height="36" 
-                               FontSize="12"
-                               Background="White" 
-                               Foreground="#546E7A"
-                               BorderBrush="#D0D0D0" 
-                               BorderThickness="1"
-                               Cursor="Hand"
-                               Margin="0,0,8,0"
-                               Click="AnteriorAnio_Click"/>
-
-                        <TextBox x:Name="AnioTextBox"
-                                Text="{Binding AnioSeleccionado, UpdateSourceTrigger=PropertyChanged}" 
-                                Width="90" 
-                                Height="36" 
-                                FontSize="16" 
-                                FontWeight="Medium" 
-                                TextAlignment="Center" 
-                                VerticalContentAlignment="Center"
-                                Foreground="#2C3E50"
-                                BorderBrush="#D0D0D0"
-                                BorderThickness="1"
-                                Margin="0,0,8,0"
-                                LostFocus="AnioTextBox_LostFocus"/>
-
-                        <Button x:Name="SiguienteAnio"
-                               Content="▶" 
-                               Width="36" 
-                               Height="36" 
-                               FontSize="12"
-                               Background="White" 
-                               Foreground="#546E7A"
-                               BorderBrush="#D0D0D0" 
-                               BorderThickness="1"
-                               Cursor="Hand"
-                               Click="SiguienteAnio_Click"/>
-                    </StackPanel>
-                </StackPanel>
+                </Grid>
             </Grid>
         </Border>
 

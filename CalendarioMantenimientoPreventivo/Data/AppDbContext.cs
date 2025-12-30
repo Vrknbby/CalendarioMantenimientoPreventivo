@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +19,14 @@ namespace CalendarioMantenimientoPreventivo.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlite("Data Source=mantenimiento.db");
+            //options.UseSqlite("Data Source=mantenimiento.db");
+
+            string dbFolder = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "CalendarioMantenimientoPreventivo");
+            Directory.CreateDirectory(dbFolder);
+            string dbPath = Path.Combine(dbFolder, "mantenimiento.db");
+            options.UseSqlite($"Data Source={dbPath}");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

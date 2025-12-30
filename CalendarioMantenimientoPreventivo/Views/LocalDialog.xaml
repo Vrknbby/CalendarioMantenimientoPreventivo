@@ -10,7 +10,8 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         WindowStyle="SingleBorderWindow"
-        Background="#FAFAFA">
+        Background="#FAFAFA"
+        Icon="/Resources/app-icon.ico">
 
     <Window.Resources>
         <!-- Estilo para etiquetas -->

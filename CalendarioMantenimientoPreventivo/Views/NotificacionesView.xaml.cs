@@ -26,7 +26,22 @@ namespace CalendarioMantenimientoPreventivo.Views
         {
             InitializeComponent();
             Notificaciones = new ObservableCollection<NotificacionInfo>(notificaciones);
+            AjustarAltura(notificaciones.Count);
             DataContext = this;
+        }
+
+        private void AjustarAltura(int cantidadNotificaciones)
+        {
+            if (cantidadNotificaciones == 1)
+            {
+                this.Height = 650;
+                this.MinHeight = 650;
+            }
+            else
+            {
+                this.Height = 920;
+                this.MinHeight = 650;
+            }
         }
 
         private void CerrarButton_Click(object sender, RoutedEventArgs e)

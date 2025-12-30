@@ -5,12 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Gestión de Mantenimientos" 
-        Height="936" 
-        Width="856"
+        Height="850" 
+        Width="800"
         MinHeight="650"
         MinWidth="750"
         WindowStartupLocation="CenterScreen"
-        Background="#FAFAFA">
+        WindowState="Maximized"
+        Background="#FAFAFA"
+        Icon="/Resources/app-icon.ico">
 
     <Window.Resources>
         <!-- Estilo para campos de texto -->
